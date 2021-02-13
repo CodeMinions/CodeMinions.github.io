@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"codeminions.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="这段时间通过对注解管理器的学习，跟着网课简单实现了玉观音注解处理，对注解有更多理解。同时由于该网课是基于kotlin讲解，于是也get了很多kotlin的基本操作之外的炫酷操作因此这篇文章，重在自身的记录理解">
+<meta property="og:type" content="article">
+<meta property="og:title" content="APT（注解处理器）学习与理解">
+<meta property="og:url" content="http://codeminions.github.io/2019/11/20/APT%EF%BC%88%E6%B3%A8%E8%A7%A3%E5%A4%84%E7%90%86%E5%99%A8%EF%BC%89%E5%AD%A6%E4%B9%A0%E4%B8%8E%E7%90%86%E8%A7%A3/index.html">
+<meta property="og:site_name" content="初学者">
+<meta property="og:description" content="这段时间通过对注解管理器的学习，跟着网课简单实现了玉观音注解处理，对注解有更多理解。同时由于该网课是基于kotlin讲解，于是也get了很多kotlin的基本操作之外的炫酷操作因此这篇文章，重在自身的记录理解">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2019-11-20T13:06:00.000Z">
+<meta property="article:modified_time" content="2021-02-11T16:00:00.000Z">
+<meta property="article:author" content="minions">
+<meta property="article:tag" content="Android">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="秘籍帖">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://codeminions.github.io/2019/11/20/APT%EF%BC%88%E6%B3%A8%E8%A7%A3%E5%A4%84%E7%90%86%E5%99%A8%EF%BC%89%E5%AD%A6%E4%B9%A0%E4%B8%8E%E7%90%86%E8%A7%A3/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>APT（注解处理器）学习与理解 | 初学者</title>
+  
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?2e98ba91428e00ba53246c847babdd82";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="初学者" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">初学者</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/CodeMinions" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://codeminions.github.io/2019/11/20/APT%EF%BC%88%E6%B3%A8%E8%A7%A3%E5%A4%84%E7%90%86%E5%99%A8%EF%BC%89%E5%AD%A6%E4%B9%A0%E4%B8%8E%E7%90%86%E8%A7%A3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="minions">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="初学者">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          APT（注解处理器）学习与理解
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-11-20 21:06:00" itemprop="dateCreated datePublished" datetime="2019-11-20T21:06:00+08:00">2019-11-20</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-02-12 00:00:00" itemprop="dateModified" datetime="2021-02-12T00:00:00+08:00">2021-02-12</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Code/" itemprop="url" rel="index"><span itemprop="name">Code</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2019/11/20/APT%EF%BC%88%E6%B3%A8%E8%A7%A3%E5%A4%84%E7%90%86%E5%99%A8%EF%BC%89%E5%AD%A6%E4%B9%A0%E4%B8%8E%E7%90%86%E8%A7%A3/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2019/11/20/APT%EF%BC%88%E6%B3%A8%E8%A7%A3%E5%A4%84%E7%90%86%E5%99%A8%EF%BC%89%E5%AD%A6%E4%B9%A0%E4%B8%8E%E7%90%86%E8%A7%A3/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>6.7k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>6 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <blockquote>
+<p>这段时间通过对注解管理器的学习，跟着网课简单实现了玉观音注解处理，对注解有更多理解。<br>同时由于该网课是基于kotlin讲解，于是也get了很多kotlin的基本操作之外的炫酷操作<br>因此这篇文章，重在自身的记录理解</p>
+</blockquote>
+<a id="more"></a>
+<h1 id="Java注解基础"><a href="#Java注解基础" class="headerlink" title="Java注解基础"></a>Java注解基础</h1><p>注解可以理解为标签，用于对代码的标记识别。使用<strong>@interface</strong>定义一个注解。</p>
+<h2 id="元注解"><a href="#元注解" class="headerlink" title="元注解"></a>元注解</h2><p>5种元注解，作为基本注解可以用于修饰其他的注解。</p>
+<h4 id="Retention"><a href="#Retention" class="headerlink" title="@Retention"></a>@Retention</h4><p>标示一个注解的存活时间，即生命周期。</p>
+<ul>
+<li>RetentionPolicy.SOURCE 只在源码阶段保留，编译时被编译器丢弃</li>
+<li>RetentionPolicy.CLASS    只被保留到编译时，不会被加载到JVM中</li>
+<li>RetentionPolicy.RUNTIME 可以被保留到运行时，故可以在运行时获取</li>
+</ul>
+<h4 id="Documented"><a href="#Documented" class="headerlink" title="@Documented"></a>@Documented</h4><p>可以将注解中的内容添加到JavaDoc中去。</p>
+<h4 id="Target"><a href="#Target" class="headerlink" title="@Target"></a>@Target</h4><p>限定一个注解的使用场景。一般的注解使用场景不被限定，使用该注解以后使用场景被限定。</p>
+<ul>
+<li>ElementType.ANNOTATION_TYPE 对一个注解进行注解</li>
+<li>ElementType.CONSTRUCTOR 对构造方法进行注解</li>
+<li>ElementType.FIELD 对属性字段进行注解</li>
+<li>ElementType.LOCAL_VARIABLE 对局部变量进行注解</li>
+<li>ElementType.METHOD 对方法进行注解</li>
+<li>ElementType.PACKAGE 对一个包进行注解</li>
+<li>ElementType.PARAMETER 对一个方法参数进行注解</li>
+<li>ElementType.TYPE 对一个类型进行注解，如类，接口，枚举</li>
+</ul>
+<h4 id="Inherited"><a href="#Inherited" class="headerlink" title="@Inherited"></a>@Inherited</h4><p>标示该注解标示的类的子类如果没有注解的话，可以继承父类的注解。</p>
+<h4 id="Repeatable"><a href="#Repeatable" class="headerlink" title="@Repeatable"></a>@Repeatable</h4><p>标示该注解可以被使用于同一位置，一般是注解的值可以有多个。实例如下<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Repeatable(Persons.class)</span></span><br><span class="line"><span class="meta">@interface</span> Person &#123;</span><br><span class="line">	<span class="function">String <span class="title">role</span><span class="params">()</span> <span class="keyword">default</span> &quot;&quot;</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@interface</span> Persons &#123;</span><br><span class="line">	Person[] value();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><br>其中@Repeatable后的Person相当于一个容器注解，<em>即用于存放其他注解的地方</em>，其本身也是一个注解。<br>容器注解需要设置一个value字段作为注解容器，因此value需要是一个数组，并且其中的注解类型需要是被@Repeatable标示的注解。</p>
+<h2 id="注解的属性"><a href="#注解的属性" class="headerlink" title="注解的属性"></a>注解的属性</h2><p>注解不存在成员方法，只有成员属性，并可以指定默认值，定义方式如下：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@interface</span> Person &#123;</span><br><span class="line">	<span class="function"><span class="keyword">int</span> <span class="title">value</span><span class="params">()</span></span>;</span><br><span class="line">	<span class="function">String <span class="title">msg</span><span class="params">()</span> <span class="keyword">default</span> &quot;hello&quot;</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 使用</span></span><br><span class="line"><span class="meta">@Person(value=1, msg=&quot;hi&quot;)</span></span><br></pre></td></tr></table></figure><br>当只有一个成员属性时，可以直接在括号中填写其值无需在写参数名；若没有成员属性</p>
+<h1 id="Android中的注解"><a href="#Android中的注解" class="headerlink" title="Android中的注解"></a>Android中的注解</h1><p>apt即AnnotationProcessingTool，注释处理工具</p>
+<ul>
+<li>android-apt和AnnotationProcessor<br>android-apt是一位开发者开发的apt框架。AndroidGradle2.2以后提供了annotationProcessor替代android-apt，不支持使用android-apt。但是目前很多项目还是使用的android-apt。</li>
+</ul>
+<ul>
+<li>注解处理器是Java层面的东西多所以无法知道kotlin层的东西，因此需要使用Builder::class.java</li>
+<li>工具类中的Logger类中的note只能在debugger时才能生效（看看实现）</li>
+<li>没有添加kotlin插件支持的模块，将不会处理.kt文件 apply ‘kotlin’</li>
+<li>build/tmp/kapt3/stubs/debug/*.java 使用kapt后将kotlin代码解释为java文件后存放位置</li>
+<li>启用kotlin插件 ‘kotlin-kapt’ 后 通过kapt project() 指定apt模块来指向我们编写的Annotation Process Tool</li>
+<li><em>Element 元素 到底是个什么东西？</em>    <strong>其实就是注解修饰的对象，可以是成员字段，成员方法，类等</strong></li>
+<li>对注解信息进行解析。通过对Element进行解析。TypeElement是Element的一个实现</li>
+<li>Element.getName获取到的Name对象，其实就是一个CharSequence字符序列</li>
+<li>Element.getPackage()获取到包名。如果是一个包，就抛出错误</li>
+<li><p>对对成员字段进行保存排序，<strong>使用TreeSet</strong>，使得成员字段发生增删变化后，其相对顺序仍保持不变，便于开发</p>
+</li>
+<li><p>自定义Field字段类</p>
+<ul>
+<li>设置value并private set，因为其值由注解传入</li>
+<li><em>prefix字首 字段的含义</em>    </li>
+<li><em>TypeMirror?        TypeMirror是Java编译时对java类型的一个表示，是所有Type类的基类</em></li>
+<li>kotlin “”” “””    将会把其中的字符串原样输出，也就是说不需要经过转义</li>
+<li>defaultValue = “”””${optional.stringValue}”””” 是我眼拙了，一共要四个也就是最后把一个叫 “string”</li>
+<li><p>对获取的方法进行解析，    </p>
+</li>
+<li><p>ActivityClass 是解析出来的类的模板，持有解析出来的类的信息（代码）</p>
+</li>
+</ul>
+</li>
+<li><p>得到是否抽象的标示，没有相关内部字段支持所以可以使用提供的api获取所有修饰符列表，判断其中是否包含abstract</p>
+</li>
+<li><p>得到是否kotlin代码的标示。由于kapt会对kotlin代码进行解释，出来一份带kotlin注解的代码，所以可以依次进行判断，但是该注解是个接口，只能通过反射获取</p>
+</li>
+<li><p>BuildProcessor</p>
+<ul>
+<li>对Builder修饰的元素进行遍历，首先过滤筛查出class的元素</li>
+<li>判断该元素是否一个activity，是的话将该element放到一个map中，将element与其activityClass关联起来</li>
+<li>对Optional修饰的对象进行遍历，还先筛出Field</li>
+<li>通过enclosingElement得到该feild的外部类，通过它在map中找到activityClass，向其中的field（TreeSet）进行赋值</li>
+<li>同上操作对Required注解的元素进行activityClass的填充</li>
+<li>最后将文件输出</li>
+</ul>
+</li>
+</ul>
+<p><em>type和kind好像都有类型的意思，具体分别代表着什么</em></p>
+<ul>
+<li>写入到文件（将从注解中获得的信息生成真正的.java文件）<ul>
+<li>使用ActivityClasss为信息来源，生成的java文件为ActivityBuilder.java，</li>
+<li>先生成类信息，不对抽象类进行处理，类名，添加修饰符，基本是public，final。最后得到一个TypeSpec，携带着类的信息</li>
+<li>编写一个ConstantBuilder专门生成常量</li>
+<li>对生成的常量进行初始化，javapoet中使用”\$S”，S表示字符串</li>
+<li>使用JavaFile生成文件</li>
+</ul>
+</li>
+<li>在Process中对文件进行生成，使用一个全局的filer</li>
+<li><p>至此可以生成代码Builder类，其中带有常量字段。因此终于得以一窥该注解处理器的主要目的：首先通过对一个activity中的字段注解进行解析，得到字段名对应的静态常量字段，通过这些字段作为tag，进行activity间的intent通信的媒介。为什么专门生成常量来作为tag，因为后边要通过注解处理器，接管这一通信过程，即舍去大量繁琐的putExtra()过程。因此tag的部分当然需要完全的包装起来。</p>
+</li>
+<li><p>通过一个start()方法启动intent的包装和activity的启动。创建一个StartMethod类存放持有所有的具体start方法，ContantBuilder来控制生成start函数</p>
+</li>
+<li>StartMethod 设置一个list存放所有的field。由于Optional的字段多于3个时将使用实例方法创建start()，所以需要有一个static的标志位。</li>
+<li>Field列表的填充，从外部传入。此处使用了运算符的重载。定义对Field的操作方法，对该对象进行复制的方法：使用同样的Field，不同的name</li>
+<li>编写build()方法。使用name创建方法，添加修饰，返回值，参数。参数需要一个TypeName，向ClassType传入包名路径获取，该类是作者编写的工具类。</li>
+<li>方法内语句的编写，需要addStatement()添加声明。使用$T，与$S不同的是，$T可以为我们导包</li>
+<li>通过遍历field列表，进一步增加方法参数，将需要的字段作为参数添加到方法中，并逐条进行putExtra()。前边未对field类型名称进行获取，这里补充一下：asJavaTypeName()    <strong>这里对name和asJavaType有点不明白</strong></li>
+<li>$L 直接把值替换，$S是把值加上引号作为字符串的自变量替换</li>
+<li>对静态方法进行区分。是静态方法，加上static；不是静态，则加上fillIntent(intent)  <strong>????</strong></li>
+<li>最后编写启动activity的代码，需要使用Activity的实例去调用startActivity()。于是在runtime模块定义ActivityBuilder类。此处不定义kotlin类，目的在于使用时可以在app中直接依赖而不需要kotlin库。</li>
+<li>ActivityBuilder使用单例模式，包装startActivity()方法，其实就是当不是Activity的context启动的时候，使用单例启动。所以这里应该可以直接使用startActivity()。这一部分和APT大概关系不大，从其直接被app依赖也可以看出</li>
+<li>开始编写StartMethodBuilder，这个类主要用于控制start方法的生成，因为需要根据Optional注解的个数进行调度。</li>
+<li>编写build()，首先实例化一个StartMethod，使用ActivityClassBuilder中定义的常量作为方法名。</li>
+<li>使用groupBy()根据是否OptionalField进行分类。使用groupBy()后在分为两个list</li>
+<li>先将Required注解的字段添加到startMethod()中，<strong>表示Required标示的的代码都需要进行处理</strong>，即NoOptional不可选的</li>
+<li>这里发现了之前写的一个bug，没注意的地方。就是根据OptionalFeild分类时，始终无法识别出OptionalFeild。经过思考，感觉是对field进行写入时的问题，果然，在BuilderProcessor中对Field写入时，判断为Optional时，就直接写入OptaionalField，而我写的Field。</li>
+<li>这里又明白一点作者的意图，就是生成多个start()方法，让使用者通过@Optional进行标示以后，可以通过选择不同的start去决定是否给Optional声明赋值。当Optional可选的个数不大于3时，可以通过传入目标字段的方式初始化指定字段；大于3时，通过传入Intent的方式，自构造Intent传入，也就是一般的做法。</li>
+<li>这个地方理解有点问题，最终效果应该是，大于3时，生成fillIntent()方法，通过对字段的赋值，使用fillIntent()对字段进行填充。其实大体意义相似，就是实现有点区别。这里需要对是否基本类型进行判断，因为不是基本类型才能使用==Null，基本类型的话就不要判空了<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> ActivityBuilder <span class="title">title</span><span class="params">(String title)</span></span>&#123;</span><br><span class="line">	<span class="keyword">this</span>.title = title;</span><br><span class="line">	rerurn <span class="keyword">this</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">fillIntent</span><span class="params">(Intent intent)</span></span>&#123;</span><br><span class="line">	<span class="keyword">if</span>(title == <span class="keyword">null</span>)</span><br><span class="line">		intent.putExtra(<span class="string">&quot;title&quot;</span>, title);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<em>关于TypeName不大理解</em><br>一个包装了类型名String的类。ClassName，TypeName的子类。写入方法时，需要用.returns()指明返回值，需要传入TypeName对象。传入包名+类名构造ClassName传入。</li>
+</ul>
+<h2 id="MY"><a href="#MY" class="headerlink" title="MY"></a>MY</h2><ul>
+<li>因为String不是基本类型，所以需要单独领出来识别。</li>
+<li>大写转下划线函数编写。使用了fold()方法辅助，自动为我们遍历集合，我们需要传入一个方法定义对每一个元素的操作</li>
+</ul>
+<h2 id="传说中的kotlin特性？"><a href="#传说中的kotlin特性？" class="headerlink" title="传说中的kotlin特性？"></a>传说中的kotlin特性？</h2><ul>
+<li>AptUtils中的TypeUtils里通过 fun Element.simpleName():String = simpleName.toString()，使得可以在开发中直接用Element调用simpleName()方法</li>
+<li>继承Comparabled接口，实现compareTo()方法，使对象可排序（比较）</li>
+<li>private set 不自动生成setter方法 </li>
+<li>?: 左值为空则调用右侧代码</li>
+<li>kotlin “”” “””    将会把其中的字符串原样输出，也就是说不需要经过转义</li>
+<li>运算符重载，使用特定方法名编写扩展方法，并使用operator修饰</li>
+<li>groupBy() 方法，传入一个函数，根据函数返回的值作为键值分类，返回一个map，键是函数返回的值，对应的值是一个存放相同结果的list，即Map&lt;T, List<R>&gt;</li>
+</ul>
+<h2 id="Kotlin学习"><a href="#Kotlin学习" class="headerlink" title="Kotlin学习"></a>Kotlin学习</h2><h3 id="方法参数"><a href="#方法参数" class="headerlink" title="方法参数"></a>方法参数</h3><p>kotlin的方法参数，可以有默认值，当传参时省略参数时会使用该默认值。<br>调用参数时，可以使用命名参数的方式传入，增强可读性：fun(arg1 = 2, arg2 = 3)<br>当返回类型可以由编译器推断，则可以不需要显式声明返回值。有代码块的方法必须显式声明，除非返回Unit</p>
+<h3 id="可变长参数"><a href="#可变长参数" class="headerlink" title="可变长参数"></a>可变长参数</h3><p>使用vararg修饰，使用数组形式调用。一般置于参数列表最后一个，或者其后的参数使用命名参数传递，或者其后是一个函数类型（lambda）<br>直接使用数据传递，使用伸展操作符，即*数组名</p>
+<h3 id="中缀表示法"><a href="#中缀表示法" class="headerlink" title="中缀表示法"></a>中缀表示法</h3><p>调用方法时，使用object fun arg的形式。该方法必须只有一个参数，不能有默认值，不是可变长数组。且必须指明调用者，即this不再可以省略。</p>
+<h3 id="顶层函数"><a href="#顶层函数" class="headerlink" title="顶层函数"></a>顶层函数</h3><p>在文件顶层声明，即不需要再使用一个类实例调用</p>
+<h3 id="局部函数"><a href="#局部函数" class="headerlink" title="局部函数"></a>局部函数</h3><p>在函数的内部定义的函数。内部函数可以访问外部函数的变量（闭包）。</p>
+<h3 id="扩展函数"><a href="#扩展函数" class="headerlink" title="扩展函数"></a>扩展函数</h3><p>为一个第三方库编写一个函数，可以使用该库的对象调用。静态解析。</p>
+<h3 id="尾递归优化"><a href="#尾递归优化" class="headerlink" title="尾递归优化"></a>尾递归优化</h3><p>对于使用尾递归的函数，kotlin中使用tailrec修饰，编译器会将其优化为循环形式实现的方式。</p>
+<h3 id="高阶函数"><a href="#高阶函数" class="headerlink" title="高阶函数"></a>高阶函数</h3><p>将函数当做参数或返回值的函数，即高阶函数的参数或返回值是一个函数。</p>
+<h3 id="函数类型"><a href="#函数类型" class="headerlink" title="函数类型"></a>函数类型</h3><p>(A, B) -&gt; C，表示了函数签名即参数与返回值。Unit返回类型不可省略。</p>
+<ul>
+<li>(Int)-&gt;((Int)-&gt; Unit) == (Int) -&gt; (Int)-&gt; Unit，因为函数类型支持右结合</li>
+</ul>
+<h3 id="Lambda表达式与匿名函数"><a href="#Lambda表达式与匿名函数" class="headerlink" title="Lambda表达式与匿名函数"></a>Lambda表达式与匿名函数</h3><p>函数字面值。如果函数最后一个参数为函数，则可以将lambda放在参数列表以外。lambda中单个参数可以使用it表示</p>
+<h3 id="泛型-声明处型变-类型投影"><a href="#泛型-声明处型变-类型投影" class="headerlink" title="泛型 声明处型变 类型投影"></a>泛型 声明处型变 类型投影</h3><p>这一部分官方文档讲的极其复杂。当然没能看懂。看到最后其实就是out和in。<strong>跳过了</strong></p>
+<h3 id="泛型方法"><a href="#泛型方法" class="headerlink" title="泛型方法"></a>泛型方法</h3><p>其实java中也有同样的使用方法只是一直没有注意。一般都是使用类的泛型在方法中调用，但其实可以直接定义泛型方法，<br><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">fun</span> <span class="type">&lt;T&gt;</span> <span class="title">singleFun</span><span class="params">(arg: <span class="type">T</span>)</span></span>: T &#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 扩展函数</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="type">&lt;T&gt;</span> T.<span class="title">sampleFun</span><span class="params">(arg: <span class="type">T</span>)</span></span>: T &#123;&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="操作符also使用实例"><a href="#操作符also使用实例" class="headerlink" title="操作符also使用实例"></a>操作符also使用实例</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">val method = startMethod.copy(field.name)</span><br><span class="line">method.addField(field)</span><br><span class="line">method.build(typeBuilder)</span><br><span class="line"></span><br><span class="line">startMethod.copy(field.name).also &#123;  it.addFeild(feild) &#125;.build(typeBuilder)</span><br></pre></td></tr></table></figure>
+<p>以上代码实现同样的效果，第二种只有一行且不需要创建引用<br>由于medthod需要addFeild()处理，但是该方法返回值为空（或返回对象）使得必须使用这种三段式方式实现。also操作符的意义在于此，it为对象本身且返回最后返回值为该对象。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">startMethod.copy(field.name).staticMethod(<span class="keyword">false</span>).build(typeBuilder)</span><br></pre></td></tr></table></figure><br>而在以上代码中则不需要使用also，因为staticMethod()方法返回对象本身，一直可以直接使用返回值.build()</p>
+
+    </div>
+
+    
+    
+    
+
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>minions
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://codeminions.github.io/2019/11/20/APT%EF%BC%88%E6%B3%A8%E8%A7%A3%E5%A4%84%E7%90%86%E5%99%A8%EF%BC%89%E5%AD%A6%E4%B9%A0%E4%B8%8E%E7%90%86%E8%A7%A3/" title="APT（注解处理器）学习与理解">http://codeminions.github.io/2019/11/20/APT（注解处理器）学习与理解/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          
+          <div class="post-tags">
+              <a href="/tags/Android/" rel="tag"><i class="fa fa-tag"></i> Android</a>
+              <a href="/tags/Java/" rel="tag"><i class="fa fa-tag"></i> Java</a>
+              <a href="/tags/%E7%A7%98%E7%B1%8D%E5%B8%96/" rel="tag"><i class="fa fa-tag"></i> 秘籍帖</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2019/10/24/View%E4%BA%8B%E4%BB%B6%E5%88%86%E5%8F%91%E6%9C%BA%E5%88%B6%E7%90%86%E8%A7%A3/" rel="prev" title="View事件分发机制理解">
+      <i class="fa fa-chevron-left"></i> View事件分发机制理解
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/10/18/equals%E5%92%8ChashCode/" rel="next" title="浅谈equals()和hashCode()">
+      浅谈equals()和hashCode() <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Java%E6%B3%A8%E8%A7%A3%E5%9F%BA%E7%A1%80"><span class="nav-number">1.</span> <span class="nav-text">Java注解基础</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%83%E6%B3%A8%E8%A7%A3"><span class="nav-number">1.1.</span> <span class="nav-text">元注解</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Retention"><span class="nav-number">1.1.0.1.</span> <span class="nav-text">@Retention</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Documented"><span class="nav-number">1.1.0.2.</span> <span class="nav-text">@Documented</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Target"><span class="nav-number">1.1.0.3.</span> <span class="nav-text">@Target</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Inherited"><span class="nav-number">1.1.0.4.</span> <span class="nav-text">@Inherited</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Repeatable"><span class="nav-number">1.1.0.5.</span> <span class="nav-text">@Repeatable</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B3%A8%E8%A7%A3%E7%9A%84%E5%B1%9E%E6%80%A7"><span class="nav-number">1.2.</span> <span class="nav-text">注解的属性</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Android%E4%B8%AD%E7%9A%84%E6%B3%A8%E8%A7%A3"><span class="nav-number">2.</span> <span class="nav-text">Android中的注解</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#MY"><span class="nav-number">2.1.</span> <span class="nav-text">MY</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BC%A0%E8%AF%B4%E4%B8%AD%E7%9A%84kotlin%E7%89%B9%E6%80%A7%EF%BC%9F"><span class="nav-number">2.2.</span> <span class="nav-text">传说中的kotlin特性？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Kotlin%E5%AD%A6%E4%B9%A0"><span class="nav-number">2.3.</span> <span class="nav-text">Kotlin学习</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%B9%E6%B3%95%E5%8F%82%E6%95%B0"><span class="nav-number">2.3.1.</span> <span class="nav-text">方法参数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%AF%E5%8F%98%E9%95%BF%E5%8F%82%E6%95%B0"><span class="nav-number">2.3.2.</span> <span class="nav-text">可变长参数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%AD%E7%BC%80%E8%A1%A8%E7%A4%BA%E6%B3%95"><span class="nav-number">2.3.3.</span> <span class="nav-text">中缀表示法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%A1%B6%E5%B1%82%E5%87%BD%E6%95%B0"><span class="nav-number">2.3.4.</span> <span class="nav-text">顶层函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B1%80%E9%83%A8%E5%87%BD%E6%95%B0"><span class="nav-number">2.3.5.</span> <span class="nav-text">局部函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%89%A9%E5%B1%95%E5%87%BD%E6%95%B0"><span class="nav-number">2.3.6.</span> <span class="nav-text">扩展函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B0%BE%E9%80%92%E5%BD%92%E4%BC%98%E5%8C%96"><span class="nav-number">2.3.7.</span> <span class="nav-text">尾递归优化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%AB%98%E9%98%B6%E5%87%BD%E6%95%B0"><span class="nav-number">2.3.8.</span> <span class="nav-text">高阶函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%87%BD%E6%95%B0%E7%B1%BB%E5%9E%8B"><span class="nav-number">2.3.9.</span> <span class="nav-text">函数类型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Lambda%E8%A1%A8%E8%BE%BE%E5%BC%8F%E4%B8%8E%E5%8C%BF%E5%90%8D%E5%87%BD%E6%95%B0"><span class="nav-number">2.3.10.</span> <span class="nav-text">Lambda表达式与匿名函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B3%9B%E5%9E%8B-%E5%A3%B0%E6%98%8E%E5%A4%84%E5%9E%8B%E5%8F%98-%E7%B1%BB%E5%9E%8B%E6%8A%95%E5%BD%B1"><span class="nav-number">2.3.11.</span> <span class="nav-text">泛型 声明处型变 类型投影</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B3%9B%E5%9E%8B%E6%96%B9%E6%B3%95"><span class="nav-number">2.3.12.</span> <span class="nav-text">泛型方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%93%8D%E4%BD%9C%E7%AC%A6also%E4%BD%BF%E7%94%A8%E5%AE%9E%E4%BE%8B"><span class="nav-number">2.3.13.</span> <span class="nav-text">操作符also使用实例</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="minions"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">minions</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">34</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/CodeMinions" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;CodeMinions" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/atom.xml" title="rss → &#x2F;atom.xml"><i class="fa fa-rss fa-fw"></i>rss</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2018 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">minions</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> v4.2.0 & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.8.0 强力驱动
+  </div>
+  <div class="post-count> 
+    <span class="post-meta-item-icon">
+      <!-- <i class="fa fa-chart-area"></i> -->
+    </span>
+    <span title="post-meta-item-text">
+	博主minions已经码了
+	  151k
+	字辣  ~\(≧▽≦)/~
+    </span>
+    
+  </div>
+  <div class="busuanzi-count">
+    <span id="busuanzi_container_site_pv" style='display:none'>
+        ///▽///
+	本站已经被访问<span id="busuanzi_value_site_pv"></span>次	 	 
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: inline;">
+      <span class="post-meta-item-icon">
+        <!-- <i class="fa fa-user"></i> -->
+      </span>
+      <span class="site-uv" title="一共有">
+        <span id="busuanzi_value_site_uv"></span>人来过辣
+	♪( ´θ｀)ノ
+      </span>
+    </span>
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : true,
+      appId      : 'ksFXxiyOicesm1H1gQuK6RvU-MdYXbMMI',
+      appKey     : 'eswY6MY2MKFfOeYILl9HsUHo',
+      placeholder: "Just go go",
+      avatar     : 'retro',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      avatar_cdn:'https://www.gravatar.com/avatar/',
+      visitor    : false,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : '',
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

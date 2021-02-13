@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"codeminions.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="关于设计模式引言  写了两年的Java和Android，对于面向对象的思想已然有了自己的一份体会，并在一次次的实践中，加深对这种思想的体会。每一次对代码封装复用，松耦合设计的过程中，都能感受到面向对象思想带来的愉悦，这大概就是其魅力所在。关于设计模式，也不可避免的接触了一些想观察者模式，单例模式，工厂模式等，但对于他们都是只停留在简单的实践阶段，对于其思想并没有太深刻的体会。  在我看来，作为一个">
+<meta property="og:type" content="article">
+<meta property="og:title" content="来吧设计模式">
+<meta property="og:url" content="http://codeminions.github.io/2019/10/14/%E6%9D%A5%E5%90%A7%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/index.html">
+<meta property="og:site_name" content="初学者">
+<meta property="og:description" content="关于设计模式引言  写了两年的Java和Android，对于面向对象的思想已然有了自己的一份体会，并在一次次的实践中，加深对这种思想的体会。每一次对代码封装复用，松耦合设计的过程中，都能感受到面向对象思想带来的愉悦，这大概就是其魅力所在。关于设计模式，也不可避免的接触了一些想观察者模式，单例模式，工厂模式等，但对于他们都是只停留在简单的实践阶段，对于其思想并没有太深刻的体会。  在我看来，作为一个">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2019-10-14T10:47:01.000Z">
+<meta property="article:modified_time" content="2019-10-19T16:00:00.000Z">
+<meta property="article:author" content="minions">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="秘籍帖">
+<meta property="article:tag" content="设计模式">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://codeminions.github.io/2019/10/14/%E6%9D%A5%E5%90%A7%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>来吧设计模式 | 初学者</title>
+  
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?2e98ba91428e00ba53246c847babdd82";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="初学者" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">初学者</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/CodeMinions" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://codeminions.github.io/2019/10/14/%E6%9D%A5%E5%90%A7%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="minions">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="初学者">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          来吧设计模式
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-10-14 18:47:01" itemprop="dateCreated datePublished" datetime="2019-10-14T18:47:01+08:00">2019-10-14</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2019-10-20 00:00:00" itemprop="dateModified" datetime="2019-10-20T00:00:00+08:00">2019-10-20</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Code/" itemprop="url" rel="index"><span itemprop="name">Code</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2019/10/14/%E6%9D%A5%E5%90%A7%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2019/10/14/%E6%9D%A5%E5%90%A7%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>7.2k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>7 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="关于设计模式"><a href="#关于设计模式" class="headerlink" title="关于设计模式"></a>关于设计模式</h1><h2 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h2><p>  写了两年的Java和Android，对于面向对象的思想已然有了自己的一份体会，并在一次次的实践中，加深对这种思想的体会。每一次对代码封装复用，松耦合设计的过程中，都能感受到面向对象思想带来的愉悦，这大概就是其魅力所在。关于设计模式，也不可避免的接触了一些想观察者模式，单例模式，工厂模式等，但对于他们都是只停留在简单的实践阶段，对于其思想并没有太深刻的体会。<br>  在我看来，作为一个Java程序员，面向对象以及设计模式的思想深度，将决定其写出来的代码，是一个精致巧妙的艺术品，还是如书中所说是一团毫无弹性的意大利面。<br>  决定需要好好恶补一下关于设计模式的知识，我选择了《Head First 设计模式》，就目前所翻阅到章节看来，我选对了！<br><a id="more"></a></p>
+<h1 id="来吧设计模式"><a href="#来吧设计模式" class="headerlink" title="来吧设计模式"></a>来吧设计模式</h1><h2 id="策略模式"><a href="#策略模式" class="headerlink" title="策略模式"></a>策略模式</h2><p>  这个模式一直有所耳闻，但一直没有了解。书中没有一开始就点明使用策略模式，最后一刻道破的时候，真的使我有种茅塞顿开的通透感。<br>  原来平时代码中面向接口，继承组合，都是在践行这种设计模式。关于定义，书中给出的描述是：</p>
+<blockquote>
+<p>定义了算法族，分别封装起来，使他们之间可以互相替换，使得算法的变化独立于使用该算法的用户</p>
+</blockquote>
+<p>我的理解是，<strong>将有可能变化的代码抽离出来与稳定不变的代码分开</strong>，成为所谓的算法族（其实就是行为组，对象的所有行为），<strong>使得新的业务逻辑的改变不会影响的旧的代码</strong>。<strong>通过组合的方式，为特定的对象赋予特定的方法组</strong>。<br>  书中使用定义多种类的鸭子作为例子，即将鸭子的行为（不同鸭子行为不同，即为可能变化的部分）抽象出来，成为一个接口，使用该接口实现不同的行为类，这是<strong>封装变化</strong>。然后在鸭子的实际类中，持有一个行为接口的引用，通过setter灵活的对该接口进行实例化，从而达到在运行时，动态的修改增加鸭子行为的效果，这是<strong>使用组合</strong>。<br>关于类的组合，看《Java编程思想》时候就有所了解，当时并不理解为什么说“少用继承，多用组合”，“‘有一个’比‘是一个’更好”，但现在终于有了自己的一点理解。使用继承，意味着可能会出现大量重复的代码，或者局部的修改影响到大部分的代码的情况；而使用组合，可以很容易的知道类的所有算法族，通过setter的方式，灵活修改算法族，并且对于新的算法族的增加，不会影响到已有的代码逻辑。这就是组合优于继承地方。关于组合的缺点，个人觉得可能与增加了类和接口的数量，或者使得类的结构变得复杂有关。</p>
+<blockquote>
+<p>OO设计原则<br>将代码中可能需要变化之处独立出来，不要和那些不需要变化的代码混合在一起。<br>针对接口编程，而不针对实现编程<br>多用组合，少用继承</p>
+</blockquote>
+<h2 id="观察者模式"><a href="#观察者模式" class="headerlink" title="观察者模式"></a>观察者模式</h2><p>  这是一个相对来说已经十分熟悉的设计模式，在android中，有许多类似的实现，如button的点击事件设置等，甚至常用的接口回调，我都觉得有点观察者模式的味道。<br>  关于观察者模式，我的理解是，<strong>对象A对对象B的状态感兴趣（关注），于是A对B进行订阅，则B的状态发生变化时，则会对所有订阅的对象进行通知，订阅对象A再根据B的通知作出相应的动作。因此如果B迟迟没有发生变化，则A不会出现相应的反应。</strong><br>  再来看看书中的理解。观察者模式定义是：定义了对象间的一对多的依赖，当一个对象改变状态时，其所有依赖者将收到通知并自动更新。我认为这与我的理解基本一致。<br>  关于观察者模式的实现，书中介绍了两种方式，一种是面向接口式的实现，一种是java.util中内置的Observer实现方式。<br>  提出内置观察者模式的原因，主要为了解决，主题向观察者推送更新时，会把所有的新数据都推送给观察者，或者将一些细微的变化都推送出去，但其实有的观察者只需要其中的某几个数据足矣。因此可以使用观察者拉取的方式，观察者主动向主题拉取数据。<br>  java.util内置的Observer，只通知观察者更新，但观察者需要自己拉取的方式实现。这是我有些困惑，其本质其实相似，主题通过observer.update()方法通知observer更新的消息，并附上对象实例作为参数，让观察者用getter的方式获取部分特定的数据。<br>  重新看过这一章，发现果然有遗漏的地方。其实java.util的观察者模式，支持主题向观察者推送数据，也支持观察者自己向主题拉取数据。Observer.update(Observable, Object)方法，需要将Observable传入以告知观察者是哪一个主题的更新。<strong>如果使用主题推送的方式，则将数据以Object的方式推送给观察者，如果是观察者拉取的方式，则观察者收到通知后，自己通过主题的实例获取更新的数据。</strong>关于细微变化的推送，内置的观察者是在notify之前加了一层判断，判断当前的更新是否需要推送。<br>  有一点需要注意，<strong>不可依赖观察者接收通知的次序</strong>。毕竟主题是通过对订阅列表的遍历进行通知的，所以接收通知的次序不可被过分依赖。<br>  关于java内置的观察者，书中还提到一件事。就是其Observable是需要通过继承实现的并且其中像setChange()方法都是受保护的（protected），因此也不能通过组合的方式实现。这也就违背了“多用组合少用继承”的原则。</p>
+<blockquote>
+<p>因为Observable是一个类，你必须设计一个类继承它。…<strong>毕竟Java不支持多重继承，这限制了Observable的复用潜力。</strong><br>除非你继承自Observable，否则你无法创建Observable实例并组合到你的对象中来。<br>观察者模式作为一种新的模式，以松耦合的方式在一系列对象之间沟通状态。其典型的代表即为之前Android中常用的MVC模式。</p>
+</blockquote>
+<blockquote>
+<p>观察者模式中，主题的状态，观察者的数目和类型都会改变，使用该模式，可以改变依赖主题状态的对象，而不用改变主题。<br>观察者模式使用组合，在运行时将观察者动态的“组合”进主题中。对象间的这种关系不是通过继承产生而是通过运行时的组合实现。<br>观察者利用主题的接口进行订阅，主题通过观察者的接口进行更新的通知。使两者之间运作正常却又松耦合。</p>
+</blockquote>
+<p>  又注意到一个问题，观察者模式的写法，跟回调函数好像有点相似。看了几篇博客，印证了自己的猜想。总结就是，回调模式是观察者模式的特殊实现，不同于一般的一对多的观察者模式，回调模式是一对一的观察者模式。</p>
+<blockquote>
+<p>OO设计原则<br>为了交互对象之间的松耦合设计而努力，即对象之间依然可以正常交互，但是不太清楚彼此的细节。</p>
+</blockquote>
+<h2 id="装饰者模式"><a href="#装饰者模式" class="headerlink" title="装饰者模式"></a>装饰者模式</h2><blockquote>
+<p>我曾以为男子汉应该用继承处理一切。后来我领教到<strong>运行时扩展，远远比编译时期的继承</strong>威力大…</p>
+</blockquote>
+<p>  说到装饰者模式，我依然只是有所耳闻，但始终没有去了解这是一个怎样的模式，只是隐隐觉得它好像和工厂模式或者build有所关联。<br>  这一章节中经常出现的一句话：<strong>类的设计应当对扩展开放，对修改关闭</strong>，即“开放-关闭原则”。大概意思是在需求发生变化或者新增时，应当通过扩展原有类的方式进行更新，而不是通过修改原有类的方式。但说实在，对于这句话我没有在更深层次的体会和理解，大概还是OO检验欠缺的缘故。<br>  使用装饰者模式，大概就是对类的一种扩展实现。<strong>装饰者模式，旨在使用扩展+委托的方式代替继承</strong>。书中的定义是：<strong>动态的将责任附加到对象上，提供了一种比继承更有弹性的的扩展的方案。</strong><br>  基本的实现是：首先要求装饰者与被装饰者属于同一类型（基类），通过不断使用装饰类包装（组合）被装饰类的方式，实现类功能属性的拓展更新。即实现扩展的效果，又不修改原有的类实现。<br>  关于装饰者与被装饰者需要继承同一基类，书中这样解释：</p>
+<blockquote>
+<p>这里利用继承达到“类型匹配”的效果，而不是利用继承获取“行为”。</p>
+</blockquote>
+<p>  为了装饰类可以对被装饰类进行包装去取代，需要它们有相同的类型，而行为的获得，是通过组合实现，所以这里使用继承，并不影响OO的设计原则。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 被装饰者（茶）</span></span><br><span class="line">Tea tea = <span class="keyword">new</span> Tea();</span><br><span class="line"><span class="comment">// 装饰者开始装饰</span></span><br><span class="line">Decoration decoration = <span class="keyword">new</span> Milk(tea);</span><br><span class="line">decoration = <span class="keyword">new</span> Sugar(decoration);</span><br><span class="line">decoration = <span class="keyword">new</span> Soy(decoration);</span><br><span class="line">decoration = <span class="keyword">new</span> Coffee(decoration);</span><br></pre></td></tr></table></figure><br>  最简单的装饰者模式实现如上，有点奇怪，好像没有见过这种代码，又好像似曾相识。书中预示道：工厂模式和生成器模式会对装饰者模式有更好的实现方式，这便是我想起了见过生成器模式代码中相似的类的包装。<br>  如果用户需要窥视装饰者链中的每一个装饰者，可以使用一个数据结构如列表等实现方式实现。<br>  关于装饰者模式的经典实现，书中介绍了Java I/O，我立即回想起了当初使用java的文件IO流时，构造流的一系列摸不着头脑的麻烦操作，原来那个过程就是对IO流的一系列装饰以使其获得更多功能如LineNumberInputStream计算行数功能，BufferedInputStream增加缓冲输入改进性能。</p>
+<h2 id="工厂模式"><a href="#工厂模式" class="headerlink" title="工厂模式"></a>工厂模式</h2><p>  终于啃完了这一章。工厂方法，也许是听的最早的设计模式，早在学习Java的时候，就了解过通过静态工厂方法初始化对象的操作。因此对其印象一直只是对对象实例化的封装，然而这一章的诸多概念，确看的一头雾水，一翻目录发现这一章的篇幅竟是其他的两倍！我一共读了三遍，才得以稍微理解。<br>  关于工厂模式书中介绍了三个概念，简单工厂，工厂方法模式，抽象工厂模式。</p>
+<h3 id="简单工厂"><a href="#简单工厂" class="headerlink" title="简单工厂"></a>简单工厂</h3><p>  简单工厂并不是一种设计模式，只能说是一种变成习惯，即是<strong>将对象初始化的工程封装到一个工厂类中</strong>，由该工厂对该类进行初始化。其中工厂的方法一般设为静态，即是所谓静态工厂方法。<br>  其实说白，就是将一个类的实例化（new过程），放到另一个类（工厂类）的静态方法中，使得类的初始化与客户代码分离。<br>  关于静态工厂，可以实现不创建工厂实例的情况下创建对象。但因为也因为是静态的不能通过继承扩展方法。</p>
+<h3 id="工厂模式-1"><a href="#工厂模式-1" class="headerlink" title="工厂模式"></a>工厂模式</h3><p>  工厂模式，是将实际创建对象的工厂方法，从工厂类移到需要创建对象的类中，并设为抽象，由该类的子类决定其该创建具体的子类。<br>  所谓让子类决定，使用书中的比萨店的例子说，在PizzaStore中通过工厂方法实例化Pizza对象，并在orderPizza()中使用该对象。其中由于工厂方法是抽象的，所以orderPizza()在使用Pizza对象时，并不能确定该对象的类型，只有PizzaStore子类实现工厂方法时，Pizza的具体对象类型才能确定。其中，PizzaStore类即为Creator，Pizza为Product，PizzaStore的子类为ConcreteCreator，Pizza的子类为ConcreteProduct。<br>  <strong>orderPizza()方法中使用的Pizza类型是抽象的，所以它不清楚Pizza的具体类型，这就是所谓的 解耦</strong>。<br>  工厂方法：定义一个创建对象的接口，但由子类决定要实例化哪一个类。<strong>工厂方法将类的实例化推迟到子类</strong>。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 工厂方法的一般形式，让子类处理类的创建，并必须返回一个产品。</span></span><br><span class="line"><span class="function"><span class="keyword">abstract</span> Product <span class="title">factoryMethod</span><span class="params">(String type)</span></span></span><br></pre></td></tr></table></figure><br><strong>通过工厂方法对象的使用者与对象的具体创建分割开来。</strong></p>
+<blockquote>
+<p>一个工厂方法与其使用者的联合，可以视为一个框架；<br>此外，工厂方法将创建对象的方法封装到每一个创建者中，这样的做法也可视为一个框架。</p>
+</blockquote>
+<ul>
+<li><p><strong>工厂模式与简单工厂的区别</strong><br>每一个ConcreteCreator看起来都有点像一个简单工厂，但其实有很大区别。在工厂模式中，工厂方法扩展自所有Creator共有的基类中的抽象方法，由每一个ConreteCreator负责实现，而简单工厂中的工厂，只是Creator中使用的对象。简单工厂中，将所有的事情放在一个地方全部实现，因此其代码缺乏弹性。<br>而工厂模式中，通过一个框架的形式，让子类去决定如何实现。而简单工厂仅是封装了对象的创建过程，却<strong>无法变更正在创建的产品</strong>。（其实这句话没能完全理解，可能对运行时还是没有很透彻吧）</p>
+</li>
+<li><p>工厂方法不一定要抽象，可以存在一个默认实现的工厂方法，由它实现默认生产的产品。</p>
+</li>
+</ul>
+<h3 id="依赖倒置原则"><a href="#依赖倒置原则" class="headerlink" title="依赖倒置原则"></a>依赖倒置原则</h3><blockquote>
+<p>要依赖抽象，不要依赖具体类<br>不能让高层组件依赖底层组件，两者都应该依赖抽象<br>  例如在工厂方法模式中，ConcreteProduct类和Creator都依赖于Product抽象类。而一般的OO思想是Creator类依赖于ConcreteProduct，因为ConcreteProduct都在Creator中被实例化，但在工厂模式中就都依赖于抽象的Product，就是依赖倒置。因此工厂模式也是遵循对象倒置的重要手段。</p>
+<ul>
+<li><strong>依赖倒置原则</strong>的建议<ol>
+<li>变量不可以持有具体类的引用（使用工厂方法可以实现这一点</li>
+<li>不要让类派生自具体类（这样会依赖一个具体类</li>
+<li>不要覆盖基类的方法（基类中已经实现的方法，应该被子类共享</li>
+</ol>
+</li>
+</ul>
+</blockquote>
+<h3 id="抽象工厂模式"><a href="#抽象工厂模式" class="headerlink" title="抽象工厂模式"></a>抽象工厂模式</h3><p>  创建一个接口，用于创建相关或依赖对象的家族，而不需要指定具体类。<strong>允许用户通过一组接口方法来创建一组对象，而不需要关心实际创建的对象的具体类，使得客户与创建的具体对象解耦</strong>。<br>  <strong>抽象工厂的方法经常使用工厂方法实现</strong>，由此也能看出，抽象工厂一般用于实现一组对象，工厂方法一般用于实现一种对象</p>
+<ul>
+<li><strong>抽象工厂与工厂方法的区别</strong><br>工厂方法通过继承创建对象，而抽象工厂使用的是对象的组合。这是说工厂方法创建具体的对象，将该对象实例化进行包装，需要继承扩展一个基类，实现其中的工厂方法。而抽象工厂需要提供一个交代了产品中的对象的生产方法的接口实现类，通过该类实现整个产品家族的创建，以这种方式实现用户与实际产品的解耦。而工厂方法不需要提供一个接口，只需要实现一个工厂方法就好了。<br>其实只要认真研读，书中的思路还是很清晰的，只能怪自己第一遍看的不仔细吧…=_=。</li>
+</ul>
+<h2 id="单例模式"><a href="#单例模式" class="headerlink" title="单例模式"></a>单例模式</h2><p>  关于单例模式大概是目前我用过的比较清晰地设计模式，因为单例模式其实很好理解，<strong>就是对外隐藏自身的构造方法，只在类的内部初始化一个唯一的实例变量并提供一个外部获取该实例的方法，实现类似全局变量的效果且在代码中只有一个唯一的对象实例</strong>。<br>  当然我也了解到，我一般使用的都还是最为基础的单例实现，关于单例模式还有很多的实现平时很少使用，如懒汉单例，线程安全的单例等。<br>  关于单例模式的使用场景，书中举例有：线程池，缓存，对话框，偏好设置或注册表的对象，日志，设备驱动或网络连接的对象等。<br>  书中的定义为：单件模式确保一个类只有一个实例，并提供一个全全局的访问点。</p>
+<h3 id="懒汉式实现"><a href="#懒汉式实现" class="headerlink" title="懒汉式实现"></a>懒汉式实现</h3><p>  最经典的实现方式，也叫懒汉式实现，实现了一种延迟实例化的效果。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 懒汉式单例</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Singleton</span> </span>&#123;</span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">static</span> Singleton instance;</span><br><span class="line">	<span class="function"><span class="keyword">private</span> <span class="title">Singleton</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Singleton <span class="title">getInstance</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="keyword">if</span>(instance == <span class="keyword">null</span>) &#123;</span><br><span class="line">			instance = <span class="keyword">new</span> Singleton();</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">return</span> instance;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><br>  该单例通过getInstance()方法获取到Singleton实例，每一次调用时判断实例对象是否为空，为空则初始化。因此，如果在代码中一直没有用到该单例，则该单例对象永远不会被初始化，即所谓的延迟实例化。</p>
+<h3 id="线程安全的懒汉式实现"><a href="#线程安全的懒汉式实现" class="headerlink" title="线程安全的懒汉式实现"></a>线程安全的懒汉式实现</h3><p>  当然这种实现方式在多线程下是不安全的，因为当两个线程同时执行getInstance()中时，同时判断instance为空从而分别创建了对象。<br>  解决方法可以是使getInstance()方法同步，即加上synchronized修饰getInstance()。但这种解决方式的缺陷是，代码会在每次调用getInstance()时，因为同步机制消耗不必要的性能。但其实我们只需要对创建对象的过程进行同步。</p>
+<h3 id="急切实例化的饿汉式实现"><a href="#急切实例化的饿汉式实现" class="headerlink" title="急切实例化的饿汉式实现"></a>急切实例化的饿汉式实现</h3><p>  饿汉式的实现方式，其实就是在类加载的过程中对instance进行实例化。这样实现的好处是，代码中任何时刻使用getInstance()获取单例时，单例都已经被初始化了。</p>
+<blockquote>
+<p>在静态初始化器中创建单件，保证了线程的安全。<br>JVM保证在任何线程访问instance之前一定对其进行初始化。</p>
+</blockquote>
+<h3 id="双重校验锁式实现"><a href="#双重校验锁式实现" class="headerlink" title="双重校验锁式实现"></a>双重校验锁式实现</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 双重校验锁式</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Singleton</span> </span>&#123;</span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">volatile</span> <span class="keyword">static</span> Singleton instance;</span><br><span class="line">	<span class="function"><span class="keyword">private</span> <span class="title">Singleton</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Singleton <span class="title">getInstance</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="keyword">if</span>(instance == <span class="keyword">null</span>) &#123;</span><br><span class="line">			<span class="keyword">synchronized</span>(Singleton.class) &#123;</span><br><span class="line">				<span class="keyword">if</span>(instance == <span class="keyword">null</span>)				</span><br><span class="line">					instance = <span class="keyword">new</span> Singleton();</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">return</span> instance;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>该实现方式，只有在第一次调用时才会进行同步。且进入同步区以后还会对instance进行检查，还是为null时才进行对象的创建。该方式可以大大减少getInstance()时的时间消耗。<br><strong>注：</strong>在Java1.5以前的jvm对volatile的实现会导致双重检查加锁的失效。因此如果对性能没有很大的要求，尽量不要使用该实现方式，因为较为繁琐还需要考虑Java的版本。</p>
+<blockquote>
+<p>是否可以使用类的单件代替对象的单件，即设置一个类和字段都为静态的类？<br>如果该类可以自给自足且初始化过程不是很复杂，可以使用。但是静态初始化的控制权在Java手上，当涉及较多的类时，可能出现由于类的初始化次序导致的问题。</p>
+</blockquote>
+<blockquote>
+<p>因为每一个类加载器都会定义一个命名空间，所以不同的类加载器可能会加载同一个类，使得程序中出现两个单件。解决方式是，自行指定类加载器，并指定同一个类加载器。</p>
+</blockquote>
+<p>饿汉式实现</p>
+<h2 id="待续"><a href="#待续" class="headerlink" title="待续"></a>待续</h2><div class="note default">
+            <p>未完待续…</p>
+          </div>
+<h1 id="总结设计模式"><a href="#总结设计模式" class="headerlink" title="总结设计模式"></a>总结设计模式</h1><ul>
+<li>愈往下读，愈发感觉<strong>继承，多态，封装</strong>这几个字更加厚重</li>
+<li>书中介绍的<strong>设计原则</strong>，也许比介绍的设计模式更加精辟重要，因为感觉所有的设计模式，隐约都存在着共通点，而这些共通点，就是设计原则！</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>minions
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://codeminions.github.io/2019/10/14/%E6%9D%A5%E5%90%A7%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" title="来吧设计模式">http://codeminions.github.io/2019/10/14/来吧设计模式/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          
+          <div class="post-tags">
+              <a href="/tags/Java/" rel="tag"><i class="fa fa-tag"></i> Java</a>
+              <a href="/tags/%E7%A7%98%E7%B1%8D%E5%B8%96/" rel="tag"><i class="fa fa-tag"></i> 秘籍帖</a>
+              <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag"><i class="fa fa-tag"></i> 设计模式</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2019/07/26/Retrofit%E5%AD%A6%E4%B9%A0/" rel="prev" title="Retrofit2学习记录">
+      <i class="fa fa-chevron-left"></i> Retrofit2学习记录
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2019/10/24/View%E4%BA%8B%E4%BB%B6%E5%88%86%E5%8F%91%E6%9C%BA%E5%88%B6%E7%90%86%E8%A7%A3/" rel="next" title="View事件分发机制理解">
+      View事件分发机制理解 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%B3%E4%BA%8E%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F"><span class="nav-number">1.</span> <span class="nav-text">关于设计模式</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BC%95%E8%A8%80"><span class="nav-number">1.1.</span> <span class="nav-text">引言</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%9D%A5%E5%90%A7%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F"><span class="nav-number">2.</span> <span class="nav-text">来吧设计模式</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F"><span class="nav-number">2.1.</span> <span class="nav-text">策略模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F"><span class="nav-number">2.2.</span> <span class="nav-text">观察者模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A3%85%E9%A5%B0%E8%80%85%E6%A8%A1%E5%BC%8F"><span class="nav-number">2.3.</span> <span class="nav-text">装饰者模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B7%A5%E5%8E%82%E6%A8%A1%E5%BC%8F"><span class="nav-number">2.4.</span> <span class="nav-text">工厂模式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AE%80%E5%8D%95%E5%B7%A5%E5%8E%82"><span class="nav-number">2.4.1.</span> <span class="nav-text">简单工厂</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B7%A5%E5%8E%82%E6%A8%A1%E5%BC%8F-1"><span class="nav-number">2.4.2.</span> <span class="nav-text">工厂模式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BE%9D%E8%B5%96%E5%80%92%E7%BD%AE%E5%8E%9F%E5%88%99"><span class="nav-number">2.4.3.</span> <span class="nav-text">依赖倒置原则</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8A%BD%E8%B1%A1%E5%B7%A5%E5%8E%82%E6%A8%A1%E5%BC%8F"><span class="nav-number">2.4.4.</span> <span class="nav-text">抽象工厂模式</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F"><span class="nav-number">2.5.</span> <span class="nav-text">单例模式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%87%92%E6%B1%89%E5%BC%8F%E5%AE%9E%E7%8E%B0"><span class="nav-number">2.5.1.</span> <span class="nav-text">懒汉式实现</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E7%9A%84%E6%87%92%E6%B1%89%E5%BC%8F%E5%AE%9E%E7%8E%B0"><span class="nav-number">2.5.2.</span> <span class="nav-text">线程安全的懒汉式实现</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%A5%E5%88%87%E5%AE%9E%E4%BE%8B%E5%8C%96%E7%9A%84%E9%A5%BF%E6%B1%89%E5%BC%8F%E5%AE%9E%E7%8E%B0"><span class="nav-number">2.5.3.</span> <span class="nav-text">急切实例化的饿汉式实现</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%8C%E9%87%8D%E6%A0%A1%E9%AA%8C%E9%94%81%E5%BC%8F%E5%AE%9E%E7%8E%B0"><span class="nav-number">2.5.4.</span> <span class="nav-text">双重校验锁式实现</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BE%85%E7%BB%AD"><span class="nav-number">2.6.</span> <span class="nav-text">待续</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%BB%E7%BB%93%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F"><span class="nav-number">3.</span> <span class="nav-text">总结设计模式</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="minions"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">minions</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">34</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/CodeMinions" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;CodeMinions" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/atom.xml" title="rss → &#x2F;atom.xml"><i class="fa fa-rss fa-fw"></i>rss</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2018 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">minions</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> v4.2.0 & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.8.0 强力驱动
+  </div>
+  <div class="post-count> 
+    <span class="post-meta-item-icon">
+      <!-- <i class="fa fa-chart-area"></i> -->
+    </span>
+    <span title="post-meta-item-text">
+	博主minions已经码了
+	  151k
+	字辣  ~\(≧▽≦)/~
+    </span>
+    
+  </div>
+  <div class="busuanzi-count">
+    <span id="busuanzi_container_site_pv" style='display:none'>
+        ///▽///
+	本站已经被访问<span id="busuanzi_value_site_pv"></span>次	 	 
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: inline;">
+      <span class="post-meta-item-icon">
+        <!-- <i class="fa fa-user"></i> -->
+      </span>
+      <span class="site-uv" title="一共有">
+        <span id="busuanzi_value_site_uv"></span>人来过辣
+	♪( ´θ｀)ノ
+      </span>
+    </span>
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : true,
+      appId      : 'ksFXxiyOicesm1H1gQuK6RvU-MdYXbMMI',
+      appKey     : 'eswY6MY2MKFfOeYILl9HsUHo',
+      placeholder: "Just go go",
+      avatar     : 'retro',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      avatar_cdn:'https://www.gravatar.com/avatar/',
+      visitor    : false,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : '',
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

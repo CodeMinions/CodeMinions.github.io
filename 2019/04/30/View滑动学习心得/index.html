@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"codeminions.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="最近学习《Android开发艺术探索》的View事件体系，对View有了跟多的理解和心得体会，遂记录，加深理解也便同人交流。View一般有三种实现方式，ScrollTo&#x2F;ScrollBy实现，动画实现，改变布局参数实现。注意其中除了动画以外，其余两种都是非弹性的滑动，即是“瞬移”。 ScrollTo&#x2F;ScrollBy实现这是View内部的两个方法，主要区别就是绝对滑动和相对滑动。即  Scroll">
+<meta property="og:type" content="article">
+<meta property="og:title" content="View事件体系之滑动学习心得">
+<meta property="og:url" content="http://codeminions.github.io/2019/04/30/View%E6%BB%91%E5%8A%A8%E5%AD%A6%E4%B9%A0%E5%BF%83%E5%BE%97/index.html">
+<meta property="og:site_name" content="初学者">
+<meta property="og:description" content="最近学习《Android开发艺术探索》的View事件体系，对View有了跟多的理解和心得体会，遂记录，加深理解也便同人交流。View一般有三种实现方式，ScrollTo&#x2F;ScrollBy实现，动画实现，改变布局参数实现。注意其中除了动画以外，其余两种都是非弹性的滑动，即是“瞬移”。 ScrollTo&#x2F;ScrollBy实现这是View内部的两个方法，主要区别就是绝对滑动和相对滑动。即  Scroll">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://codeminions.github.io/2019/04/30/View%E6%BB%91%E5%8A%A8%E5%AD%A6%E4%B9%A0%E5%BF%83%E5%BE%97/Scroller.jpg">
+<meta property="og:image" content="http://codeminions.github.io/2019/04/30/View%E6%BB%91%E5%8A%A8%E5%AD%A6%E4%B9%A0%E5%BF%83%E5%BE%97/演示1.gif">
+<meta property="og:image" content="http://codeminions.github.io/2019/04/30/View%E6%BB%91%E5%8A%A8%E5%AD%A6%E4%B9%A0%E5%BF%83%E5%BE%97/演示2.gif">
+<meta property="article:published_time" content="2019-04-29T16:00:00.000Z">
+<meta property="article:modified_time" content="2019-10-27T16:00:00.000Z">
+<meta property="article:author" content="minions">
+<meta property="article:tag" content="Android">
+<meta property="article:tag" content="技能帖">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://codeminions.github.io/2019/04/30/View%E6%BB%91%E5%8A%A8%E5%AD%A6%E4%B9%A0%E5%BF%83%E5%BE%97/Scroller.jpg">
+
+<link rel="canonical" href="http://codeminions.github.io/2019/04/30/View%E6%BB%91%E5%8A%A8%E5%AD%A6%E4%B9%A0%E5%BF%83%E5%BE%97/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>View事件体系之滑动学习心得 | 初学者</title>
+  
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?2e98ba91428e00ba53246c847babdd82";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="初学者" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">初学者</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/CodeMinions" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://codeminions.github.io/2019/04/30/View%E6%BB%91%E5%8A%A8%E5%AD%A6%E4%B9%A0%E5%BF%83%E5%BE%97/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="minions">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="初学者">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          View事件体系之滑动学习心得
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-04-30 00:00:00" itemprop="dateCreated datePublished" datetime="2019-04-30T00:00:00+08:00">2019-04-30</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2019-10-28 00:00:00" itemprop="dateModified" datetime="2019-10-28T00:00:00+08:00">2019-10-28</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Code/" itemprop="url" rel="index"><span itemprop="name">Code</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2019/04/30/View%E6%BB%91%E5%8A%A8%E5%AD%A6%E4%B9%A0%E5%BF%83%E5%BE%97/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2019/04/30/View%E6%BB%91%E5%8A%A8%E5%AD%A6%E4%B9%A0%E5%BF%83%E5%BE%97/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>3.7k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>3 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="最近学习《Android开发艺术探索》的View事件体系，对View有了跟多的理解和心得体会，遂记录，加深理解也便同人交流。"><a href="#最近学习《Android开发艺术探索》的View事件体系，对View有了跟多的理解和心得体会，遂记录，加深理解也便同人交流。" class="headerlink" title="最近学习《Android开发艺术探索》的View事件体系，对View有了跟多的理解和心得体会，遂记录，加深理解也便同人交流。"></a>最近学习《Android开发艺术探索》的View事件体系，对View有了跟多的理解和心得体会，遂记录，加深理解也便同人交流。</h2><p>View一般有三种实现方式，<strong>ScrollTo/ScrollBy实现</strong>，<strong>动画实现</strong>，<strong>改变布局参数实现</strong>。注意其中除了动画以外，其余两种都是非弹性的滑动，即是“瞬移”。</p>
+<h2 id="ScrollTo-ScrollBy实现"><a href="#ScrollTo-ScrollBy实现" class="headerlink" title="ScrollTo/ScrollBy实现"></a>ScrollTo/ScrollBy实现</h2><p>这是View内部的两个方法，主要区别就是绝对滑动和相对滑动。即</p>
+<blockquote>
+<p>ScrollTo()，基于所传递参数的绝对滑动<br>ScrollBy()，基于当前位置的相对滑动  </p>
+</blockquote>
+<a id="more"></a>
+<p>这是书中的原话，但是我一开始却没有理解对“绝对滑动”。所谓相对滑动指的是相对于当前位置的滑动，所谓绝对滑动指的是content在View中的绝对位置，而非我一开始理解的相对于屏幕的绝对位置。关于这一点不理解的话，后边会有一个小例（keng）子。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Set the scrolled position of your view. This will cause a call to</span></span><br><span class="line"><span class="comment"> * &#123;<span class="doctag">@link</span> #onScrollChanged(int, int, int, int)&#125; and the view will be</span></span><br><span class="line"><span class="comment"> * invalidated.</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> x the x position to scroll to</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> y the y position to scroll to</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">scrollTo</span><span class="params">(<span class="keyword">int</span> x, <span class="keyword">int</span> y)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (mScrollX != x || mScrollY != y) &#123;</span><br><span class="line">        <span class="keyword">int</span> oldX = mScrollX;</span><br><span class="line">        <span class="keyword">int</span> oldY = mScrollY;</span><br><span class="line">        mScrollX = x;</span><br><span class="line">        mScrollY = y;</span><br><span class="line">        invalidateParentCaches();</span><br><span class="line">        onScrollChanged(mScrollX, mScrollY, oldX, oldY);</span><br><span class="line">        <span class="keyword">if</span> (!awakenScrollBars()) &#123;</span><br><span class="line">            postInvalidateOnAnimation();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Move the scrolled position of your view. This will cause a call to</span></span><br><span class="line"><span class="comment"> * &#123;<span class="doctag">@link</span> #onScrollChanged(int, int, int, int)&#125; and the view will be</span></span><br><span class="line"><span class="comment"> * invalidated.</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> x the amount of pixels to scroll by horizontally</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> y the amount of pixels to scroll by vertically</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">scrollBy</span><span class="params">(<span class="keyword">int</span> x, <span class="keyword">int</span> y)</span> </span>&#123;</span><br><span class="line">    scrollTo(mScrollX + x, mScrollY + y);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><br>由源码很明显看出，ScrollBy()就是直接调用了ScrollTo()，ScrollTo()中就只是记录了一下当前滑动的坐标然后对View进行了<strong>重绘</strong>（postInvalidateOnAnimation中触发重绘）。且在重绘之前还会调用 <strong>onScrollChanged()</strong> 方法。<br>关于其中mScrollX，和mScrollY属性，直接画了一个示意图方便理解。<br><img src="/2019/04/30/View%E6%BB%91%E5%8A%A8%E5%AD%A6%E4%B9%A0%E5%BF%83%E5%BE%97/Scroller.jpg" alt="Content-View"></p>
+<p>关于ScrollTo方法十分需要注意的一点：<br><strong>ScrollTo()方法只能对View中的Content进行操作移动而不能移动View的位置</strong><br>View中的Content，例如TextView的Content即为文本，ImageView的Content即为Drawable。</p>
+<h2 id="动画实现"><a href="#动画实现" class="headerlink" title="动画实现"></a>动画实现</h2><p>这种实现在效果上较于其他两种有所不同，动画可以通过设置移动时间实现弹性滑动的效果。动画在实质上其实是对translationX/translationY进行操作。</p>
+<h3 id="View动画"><a href="#View动画" class="headerlink" title="View动画"></a>View动画</h3><p>View动画需要在res下建立anim文件夹，通过xml文件定义动画形式。<br>由于View动画实际上是对View的影像进行操作，因此在使用上有许多需要注意的地方</p>
+<ul>
+<li>需要指定 <strong>android:fillAfter=”true”</strong>，否则动画完成以后其结果会消失，回到原状。</li>
+<li>由于操作的是影像，所以不能真正改变View的宽高。因此动画结束后，<strong>新的位置存在只是一个影像</strong>，View真正的位置其实还在原始位置。这在用户交互上显然是是一个很要命的问题，例如对一个设置了点击事件的Button进行了view动画，将无法在影响上响应点击事件，而是还要 <strong>回到原始位置触发</strong>。</li>
+</ul>
+<h3 id="属性动画"><a href="#属性动画" class="headerlink" title="属性动画"></a>属性动画</h3><p>属性动画则是直接在代码中对View进行动画操作。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 对translationX进行操作 0-&gt;100</span></span><br><span class="line">ObjectAnimator.ofFloat(tatrgetView,<span class="string">&quot;translationX&quot;</span>, <span class="number">0</span>, <span class="number">100</span>).setDuration(<span class="number">100</span>).start();</span><br></pre></td></tr></table></figure><br>android3.0以前，View动画需要使用nineoldandroids库实现，但其实现的属性动画，实质上还是View动画，因此也具有View动画的缺点。但Android3.0以上的属性动画则可以解决以上的所有问题。</p>
+<h4 id="《艺术探索》提供的解决（准确来说是规避）View动画缺点的参考方案"><a href="#《艺术探索》提供的解决（准确来说是规避）View动画缺点的参考方案" class="headerlink" title="《艺术探索》提供的解决（准确来说是规避）View动画缺点的参考方案"></a>《艺术探索》提供的解决（准确来说是规避）View动画缺点的参考方案</h4><p>在终点位置设置一个与原始View外观与点击事件都相同的View，动画结束以后通过visibility显示。</p>
+<h2 id="改变布局参数实现"><a href="#改变布局参数实现" class="headerlink" title="改变布局参数实现"></a>改变布局参数实现</h2><p>改变布局参数即设置LayoutParams。一般有两种情形，一是直接设置目标View的LayoutParams（margin）实现滑动，二是改变旁边布局的Layoutparams（width）实现滑动，而实际上View是被“挤开”的。书中也介绍了两种重新设置Layoutparams的方法。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 我一般使用</span></span><br><span class="line">view.setLayoutParams(lp);</span><br><span class="line"><span class="comment">// 涨见识</span></span><br><span class="line">view.requestLayout();</span><br></pre></td></tr></table></figure></p>
+<h2 id="一个小坑"><a href="#一个小坑" class="headerlink" title="一个小坑"></a>一个小坑</h2><p>学习了相关知识以后，我决定写一个小demo检验+加深一下学习成果。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">btn_by.setOnClickListener(<span class="keyword">new</span> View.OnClickListener() &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onClick</span><span class="params">(View v)</span> </span>&#123;</span><br><span class="line">        ObjectAnimator.ofFloat(viewP, <span class="string">&quot;translationX&quot;</span>, <span class="number">0</span>, <span class="number">300</span>).setDuration(<span class="number">1000</span>).start();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br><span class="line">btn_to.setOnClickListener(<span class="keyword">new</span> View.OnClickListener() &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onClick</span><span class="params">(View v)</span> </span>&#123;</span><br><span class="line">        viewP.scrollTo(-<span class="number">100</span>, -<span class="number">600</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure><br>逻辑十分简单，就是两个View用来滑动，为了体现滑动前后与用户的交互情况，给他们设置了点击事件并通过点击事件让自己滑动。其中viewP指的是两个view（Button）的父布局（LinearLayout），即两个view时viewP的content。<br>一开始一切实现效果都在我的预计之中，但当我将点击代码改为以上代码时，出现了与我想象完全不同的效果<br><img src="/2019/04/30/View%E6%BB%91%E5%8A%A8%E5%AD%A6%E4%B9%A0%E5%BF%83%E5%BE%97/演示1.gif" alt="演示1"><br>首先btn_to使用ScrollTo()，不应该两次移动到两个不同的位置，其次btn_by并不是按动画中设置的从0位置出发。纠结半天后，设置了背景色，问题就无处遁形了。<br><img src="/2019/04/30/View%E6%BB%91%E5%8A%A8%E5%AD%A6%E4%B9%A0%E5%BF%83%E5%BE%97/演示2.gif" alt="演示2"><br>可以很明显的发现，btn_by点击以后，动画是作用在整个viewP上的，所以点击btn_to之后，没有移动或者移动到指定位置为右边并没有问题，因为btn_to相对于其父布局来说确实是在指定位置了。<br>虽然这只是一个小乌龙，但提示了我两个问题：</p>
+<ul>
+<li><strong>只有ScrollTo()方法是作用在content上的</strong>，动画和LayoutParams都能直接作用于View。这一点出问题其间是有意识到的，但我一直以为ScrollTo所谓的绝对滑动指的是绝对于屏幕。这也就是下一点要说的</li>
+<li><strong>ScrollTo()所谓的绝对滑动是相对于父布局（也就是调用ScrollTo()的View）而言</strong>，而不是我一开始认为的相对于屏幕的坐标。出了这个问题，再回头去看那个Content-View的图，一切就都很明了了。</li>
+</ul>
+<p>总结：</p>
+<ul>
+<li>ScrollTo/ScrollBy方法操作的是View的Content上，而其他两种方式则是直接作用在View上边的。且这种方式不影响内部元素的交互（点击事件）</li>
+<li>使用View动画时注意设置fillAfter以“保存”动画结果，注意View动画无法移动实体只能移动影像对交互的影响。因此View动画适用于不需要与用户交互的情况</li>
+<li>Android3.0以前实现属性动画需要使用到的nineoldandroids库实质上也是实现了View动画</li>
+<li>一些复杂的效果只有动画可以实现</li>
+</ul>
+<p>Ps：通过对View一些原理上的学习，很大程度上的提升了对View机制的理解，也对很多之前写代码时候使用到的东西理解更加清晰透彻。</p>
+<p>知其然，也知其所以然！</p>
+
+    </div>
+
+    
+    
+    
+
+    <div style=" width:100%; text-align:center; margin-left:15px; margin-right:15px;">
+	<hr style="width:30%;vertical-align:middle; display:inline-block;"/>  
+	    完结 
+	    <i class="fa fa-paw"></i> 
+	     撒花 ฅ&gt;ω&lt;*ฅ  
+	<hr style="width:30%;vertical-align:middle; display:inline-block;"/>
+    </div>
+
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>minions
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://codeminions.github.io/2019/04/30/View%E6%BB%91%E5%8A%A8%E5%AD%A6%E4%B9%A0%E5%BF%83%E5%BE%97/" title="View事件体系之滑动学习心得">http://codeminions.github.io/2019/04/30/View滑动学习心得/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          
+          <div class="post-tags">
+              <a href="/tags/Android/" rel="tag"><i class="fa fa-tag"></i> Android</a>
+              <a href="/tags/%E6%8A%80%E8%83%BD%E5%B8%96/" rel="tag"><i class="fa fa-tag"></i> 技能帖</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2019/03/06/Android%E6%89%8B%E5%8A%BF%E7%9B%91%E5%90%AC%E5%85%A5%E9%97%A8/" rel="prev" title="Android手势监听入门">
+      <i class="fa fa-chevron-left"></i> Android手势监听入门
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2019/07/05/deepin%E6%8A%98%E8%85%BE%E8%AE%B0%E5%BD%95/" rel="next" title="Deepin又一次折腾记录">
+      Deepin又一次折腾记录 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%80%E8%BF%91%E5%AD%A6%E4%B9%A0%E3%80%8AAndroid%E5%BC%80%E5%8F%91%E8%89%BA%E6%9C%AF%E6%8E%A2%E7%B4%A2%E3%80%8B%E7%9A%84View%E4%BA%8B%E4%BB%B6%E4%BD%93%E7%B3%BB%EF%BC%8C%E5%AF%B9View%E6%9C%89%E4%BA%86%E8%B7%9F%E5%A4%9A%E7%9A%84%E7%90%86%E8%A7%A3%E5%92%8C%E5%BF%83%E5%BE%97%E4%BD%93%E4%BC%9A%EF%BC%8C%E9%81%82%E8%AE%B0%E5%BD%95%EF%BC%8C%E5%8A%A0%E6%B7%B1%E7%90%86%E8%A7%A3%E4%B9%9F%E4%BE%BF%E5%90%8C%E4%BA%BA%E4%BA%A4%E6%B5%81%E3%80%82"><span class="nav-number">1.</span> <span class="nav-text">最近学习《Android开发艺术探索》的View事件体系，对View有了跟多的理解和心得体会，遂记录，加深理解也便同人交流。</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ScrollTo-ScrollBy%E5%AE%9E%E7%8E%B0"><span class="nav-number">2.</span> <span class="nav-text">ScrollTo&#x2F;ScrollBy实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8A%A8%E7%94%BB%E5%AE%9E%E7%8E%B0"><span class="nav-number">3.</span> <span class="nav-text">动画实现</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#View%E5%8A%A8%E7%94%BB"><span class="nav-number">3.1.</span> <span class="nav-text">View动画</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B1%9E%E6%80%A7%E5%8A%A8%E7%94%BB"><span class="nav-number">3.2.</span> <span class="nav-text">属性动画</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E3%80%8A%E8%89%BA%E6%9C%AF%E6%8E%A2%E7%B4%A2%E3%80%8B%E6%8F%90%E4%BE%9B%E7%9A%84%E8%A7%A3%E5%86%B3%EF%BC%88%E5%87%86%E7%A1%AE%E6%9D%A5%E8%AF%B4%E6%98%AF%E8%A7%84%E9%81%BF%EF%BC%89View%E5%8A%A8%E7%94%BB%E7%BC%BA%E7%82%B9%E7%9A%84%E5%8F%82%E8%80%83%E6%96%B9%E6%A1%88"><span class="nav-number">3.2.1.</span> <span class="nav-text">《艺术探索》提供的解决（准确来说是规避）View动画缺点的参考方案</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%94%B9%E5%8F%98%E5%B8%83%E5%B1%80%E5%8F%82%E6%95%B0%E5%AE%9E%E7%8E%B0"><span class="nav-number">4.</span> <span class="nav-text">改变布局参数实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E4%B8%AA%E5%B0%8F%E5%9D%91"><span class="nav-number">5.</span> <span class="nav-text">一个小坑</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="minions"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">minions</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">34</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/CodeMinions" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;CodeMinions" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/atom.xml" title="rss → &#x2F;atom.xml"><i class="fa fa-rss fa-fw"></i>rss</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2018 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">minions</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> v4.2.0 & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.8.0 强力驱动
+  </div>
+  <div class="post-count> 
+    <span class="post-meta-item-icon">
+      <!-- <i class="fa fa-chart-area"></i> -->
+    </span>
+    <span title="post-meta-item-text">
+	博主minions已经码了
+	  151k
+	字辣  ~\(≧▽≦)/~
+    </span>
+    
+  </div>
+  <div class="busuanzi-count">
+    <span id="busuanzi_container_site_pv" style='display:none'>
+        ///▽///
+	本站已经被访问<span id="busuanzi_value_site_pv"></span>次	 	 
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: inline;">
+      <span class="post-meta-item-icon">
+        <!-- <i class="fa fa-user"></i> -->
+      </span>
+      <span class="site-uv" title="一共有">
+        <span id="busuanzi_value_site_uv"></span>人来过辣
+	♪( ´θ｀)ノ
+      </span>
+    </span>
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : true,
+      appId      : 'ksFXxiyOicesm1H1gQuK6RvU-MdYXbMMI',
+      appKey     : 'eswY6MY2MKFfOeYILl9HsUHo',
+      placeholder: "Just go go",
+      avatar     : 'retro',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      avatar_cdn:'https://www.gravatar.com/avatar/',
+      visitor    : false,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : '',
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

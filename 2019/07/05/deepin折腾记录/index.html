@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"codeminions.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="Deepin 15.10.2 stable最近又重装了一遍Deepin，全新安装最新版本Deepin15.10.1，然后更到15.10.2（赶上这几天Deepin更新了）。此次安装折腾了两天，解决了很多之前的问题，当然，也出现很多之前没有出现过的问题（流泪）。得到了很多经验体会，特此记录（这几天不断地强制关机，感觉我的机械硬盘命不久矣噢…TAT）">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Deepin又一次折腾记录">
+<meta property="og:url" content="http://codeminions.github.io/2019/07/05/deepin%E6%8A%98%E8%85%BE%E8%AE%B0%E5%BD%95/index.html">
+<meta property="og:site_name" content="初学者">
+<meta property="og:description" content="Deepin 15.10.2 stable最近又重装了一遍Deepin，全新安装最新版本Deepin15.10.1，然后更到15.10.2（赶上这几天Deepin更新了）。此次安装折腾了两天，解决了很多之前的问题，当然，也出现很多之前没有出现过的问题（流泪）。得到了很多经验体会，特此记录（这几天不断地强制关机，感觉我的机械硬盘命不久矣噢…TAT）">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2019-07-04T16:00:00.000Z">
+<meta property="article:modified_time" content="2019-07-09T16:00:00.000Z">
+<meta property="article:author" content="minions">
+<meta property="article:tag" content="技能帖">
+<meta property="article:tag" content="Deepin">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://codeminions.github.io/2019/07/05/deepin%E6%8A%98%E8%85%BE%E8%AE%B0%E5%BD%95/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Deepin又一次折腾记录 | 初学者</title>
+  
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?2e98ba91428e00ba53246c847babdd82";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="初学者" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">初学者</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/CodeMinions" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://codeminions.github.io/2019/07/05/deepin%E6%8A%98%E8%85%BE%E8%AE%B0%E5%BD%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="minions">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="初学者">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Deepin又一次折腾记录
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-07-05 00:00:00" itemprop="dateCreated datePublished" datetime="2019-07-05T00:00:00+08:00">2019-07-05</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2019-07-10 00:00:00" itemprop="dateModified" datetime="2019-07-10T00:00:00+08:00">2019-07-10</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/OS/" itemprop="url" rel="index"><span itemprop="name">OS</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2019/07/05/deepin%E6%8A%98%E8%85%BE%E8%AE%B0%E5%BD%95/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2019/07/05/deepin%E6%8A%98%E8%85%BE%E8%AE%B0%E5%BD%95/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>3.1k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>3 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="Deepin-15-10-2-stable"><a href="#Deepin-15-10-2-stable" class="headerlink" title="Deepin 15.10.2 stable"></a>Deepin 15.10.2 stable</h2><p>最近又重装了一遍Deepin，全新安装最新版本Deepin15.10.1，然后更到15.10.2（赶上这几天Deepin更新了）。此次安装折腾了两天，解决了很多之前的问题，当然，也出现很多之前没有出现过的问题（流泪）。<br>得到了很多经验体会，特此记录<br>（这几天不断地强制关机，感觉我的机械硬盘命不久矣噢…TAT）<br><a id="more"></a></p>
+<h2 id="安全模式安装系统"><a href="#安全模式安装系统" class="headerlink" title="安全模式安装系统"></a>安全模式安装系统</h2><p>首先是全新安装，日常出现卡在DeepinLogo处死机的现象。重新开机（没错就是先强制重启），选择install faillsafe，进入安全模式。（这里有时候也会进不去，多试两次就进去了）。<br>（这里出现过一个很有意思的问题：安全模式下长时间不操作，系统待机，唤醒后是用户登录页，需要输入密码，我都没有设置用户和密码怎么登录？？蒙了好几个所谓初始密码后，放弃，强制重启）<br>安全模式中，我是先安装了intel-microcode，因为在开机日志里会看到update microcode to version 0x52</p>
+<blockquote>
+<p>sudo apt-get install intel-microcode</p>
+</blockquote>
+<p>注：使用其他源（如上交大源）可能会无法定位该包，建议先切回官方源。<br>然后更新独显驱动，因为15.5版本的时候，一更新系统内核就会崩，即卡在logo无法进入系统，直到更新了显卡驱动，后才能正常时候新内核</p>
+<blockquote>
+<p>sudo apt-get install nvidia-driver    // 其实是安装了一个闭源的显卡驱动</p>
+</blockquote>
+<p>然后点击桌面的安装程序开始安装。<br>安装成功后即可进入系统。注意重新安装一下intel-microcode，和显卡驱动，因为安全模式的安装的软件，到正常系统就没有了（安全模式大概就类似windows下的PE系统吧）。</p>
+<h2 id="更新软件列表及更换镜像源"><a href="#更新软件列表及更换镜像源" class="headerlink" title="更新软件列表及更换镜像源"></a>更新软件列表及更换镜像源</h2><p>接着更新软件列表</p>
+<blockquote>
+<p>sudo apt-get update</p>
+</blockquote>
+<p>注意，在此之前可以先更换一下软件源，因为官方源一般会比较慢。据说在广东及河南等地，上交大的镜像源会比较快。另外华为云在社区口碑也不错。更换方式如下，进入/etc/apt/source.list直接添加(1)或命令行添加(2)：</p>
+<blockquote>
+<ol>
+<li>deb [by-hash=force] <a target="_blank" rel="noopener" href="http://ftp.sjtu.edu.cn/deepin">http://ftp.sjtu.edu.cn/deepin</a> panda main contrib non-free</li>
+<li>sudo sed -i “s@<a target="_blank" rel="noopener" href="http://packages.deepin.com/deepin@https://mirrors.huaweicloud.com/deepin@g&quot;">http://packages.deepin.com/deepin@https://mirrors.huaweicloud.com/deepin@g&quot;</a> /etc/apt/sources.list</li>
+</ol>
+</blockquote>
+<p>该命令会顺带更新系统。</p>
+<h2 id="独显问题开始作妖"><a href="#独显问题开始作妖" class="headerlink" title="独显问题开始作妖"></a>独显问题开始作妖</h2><p>升级完系统后，又出现问题了。<br>我的dde桌面突然退到2D模式，即关闭了桌面动画，而且系统软件打开后都会出现厚厚的黑框框。经查确实是处于2D模式且无法切换为3D模式。我就感觉，必然又是显卡出了问题。折腾大半天，切换为大黄蜂显卡驱动方案可以解决问题。<br>切换方式可以通过</p>
+<blockquote>
+<p>sudo apt-get install bumblebee-nvidia nvidia-driver nvidia-settings</p>
+</blockquote>
+<p>安装大黄蜂驱动，也可以直接在系统软件“显卡驱动管理器”中自动安装切换。具体方式如下：<br><a target="_blank" rel="noopener" href="https://wiki.deepin.org/index.php?title=Deepin%E5%AE%89%E8%A3%85%E6%9C%80%E6%96%B0NVIDIA%E9%A9%B1%E5%8A%A8&amp;language=en">安装大黄蜂显卡驱动</a><br>其实一开始切换是有点慌的，因为在社区见过有旁友装了大黄蜂以后无法进入系统。</p>
+<h2 id="待机后无法唤醒"><a href="#待机后无法唤醒" class="headerlink" title="待机后无法唤醒"></a>待机后无法唤醒</h2><p>然而后来确实出现问题了。我发现待机时间过长，显示屏关闭后，无法唤醒显示屏。虽然可以听到系统确实已经启动，可以听到wifi连接的提示音，但是显示屏就是不亮。<br>这个在社区已经臭名昭著的待机后无法唤醒的问题，今天终于被我遇上了。。TAT<br>在社区看了很多帖子，都说没有可以真正解决的方式，无非强制计算机不待机（？？）。期间我也试过切换回开源驱动，即默认的驱动，但是没有效果，于是最后只得切回大黄蜂（听说该驱动省电），然后…强制不待机…<br>感觉很多问题挖到后边都能和独显扯上关系啊…</p>
+<h2 id="pcspkr问题？？"><a href="#pcspkr问题？？" class="headerlink" title="pcspkr问题？？"></a>pcspkr问题？？</h2><p>这一次更新系统后，还出现一个新的现象，出现系统Logo后，一般就进入用户登录界面了，但现在在Logo页还会打印log，其中是一条报错信息</p>
+<blockquote>
+<p>Error: Driver ‘pcspkr’ is already registered, aborting…</p>
+</blockquote>
+<p>甚至在前几次开机时，出现该log后，是有一定几率进不去系统的。。貌似upate以后就可以稳定进入了但是每次到那个地方还是会有停顿的样子。每次都会提一口气担心系统又这样挂掉了。<br>查了一下，这是一个跟蜂鸣器相关的内核模块，想想确实Deepin在那个时间会调蜂鸣器发出进入系统的提示音。找了一圈找到的解决方式是</p>
+<ol>
+<li><blockquote>
+<p>aptitude install alsa-base<br>echo blacklist snd-pcsp &gt;&gt; /etc/modprobe.d/alsa-base-blacklist</p>
+</blockquote>
+</li>
+<li><p>据说该方法原理是屏蔽该模块</p>
+<blockquote>
+<p>echo -e “# Used for shielding pcspkr module, this module seems to be related to buzzer.\nblacklist pcspkr” | sudo tee /etc/modprobe.d/blacklist-pcspkr.conf</p>
+</blockquote>
+</li>
+</ol>
+<p>由于我虽然出现这个问题，但是后来都不影响启动，所以我也没折腾这个问题。但据社区的帖子所说，这两个方法貌似都没能根治该问题…</p>
+<hr>
+<h2 id="臭名昭著的Logo死机问题"><a href="#臭名昭著的Logo死机问题" class="headerlink" title="臭名昭著的Logo死机问题"></a>臭名昭著的Logo死机问题</h2><p>关于开机时卡在logo处的问题，另找到一个解决方案：<br>开机后在grub引导时，选择deepin系统，先不要按Enter，按e键进入编辑模式</p>
+<blockquote>
+<p>在菜单中的代码中，找到倒数第二行，会出现如下所示的代码：<br>linux /vmlinuz-4.15.0-29deepin-generic root=UUID=b66d8ffa-aed9-466c-bc12-6bb801e45901 ro splash quiet<br>表示加载的linux内核文件，后面是内核的参数，各项含义为<br>root告诉内核根分区的设备<br>ro表示在设备启动时为read-only，如果是rw表示read-write<br>splash表示开机动画<br>quiet表示在启动过程中只有重要信息显示，类似硬件自检的消息不会显示quiet表示在启动过程中只有重要信息显示，类似硬件自检的消息不会显示<br>single以单用户模式登录，一般用于修改系统，比如deepin密码忘记了等等。single以单用户模式登录，一般用于修改系统，比如deepin密码忘记了等等。<br><strong>在quiet的后面空一格加上如下所示的代码：acpi_osi=! acpi=”windows 2009”，按F10保存即可。这时会重新开始登录deepin系统，耐心等待进入桌面。</strong></p>
+</blockquote>
+<p>但是以上操作只能成功进入系统一次，大概因为以上对grub的设置其实写到一个临时文件中，所以不能对以后的进入奏效。<br>所以需要对grub的设置文件进行修改，永久性解决该问题。进入系统以后，执行</p>
+<blockquote>
+<p>sudo gedit /boot/grub/grub.cfg</p>
+</blockquote>
+<p>打开配置文件。如果系统没有gedit可以使用vim或nano打开，仍在原来的位置加上，<strong>acpi_osi=! acpi=”windows 2009”</strong>。<br>据说这种操作的原理是：旧版的BIOS无法打识别一些新版的linux内核，所以添加该语句让系统“误以为”是Windows系统。<br><a target="_blank" rel="noopener" href="https://blog.csdn.net/HuaCode/article/details/83216338">参考原文</a></p>
+<hr>
+<h2 id="备注：系统的显卡驱动管理器中原本有一个NV-PRIME方案，用于混合显卡的驱动。但15-10-2stable版本中官方禁用了prime方案（暂时）。"><a href="#备注：系统的显卡驱动管理器中原本有一个NV-PRIME方案，用于混合显卡的驱动。但15-10-2stable版本中官方禁用了prime方案（暂时）。" class="headerlink" title="备注：系统的显卡驱动管理器中原本有一个NV-PRIME方案，用于混合显卡的驱动。但15.10.2stable版本中官方禁用了prime方案（暂时）。"></a>备注：系统的显卡驱动管理器中原本有一个NV-PRIME方案，用于混合显卡的驱动。但15.10.2stable版本中官方禁用了prime方案（暂时）。</h2><p><strong>如果对上述问题有较好的解决方式或看法，欢迎交流[邮箱 <a href="mailto:xiaohuangren028@gmail.com">xiaohuangren028@gmail.com</a>]</strong></p>
+
+    </div>
+
+    
+    
+    
+
+    <div style=" width:100%; text-align:center; margin-left:15px; margin-right:15px;">
+	<hr style="width:30%;vertical-align:middle; display:inline-block;"/>  
+	    完结 
+	    <i class="fa fa-paw"></i> 
+	     撒花 ฅ&gt;ω&lt;*ฅ  
+	<hr style="width:30%;vertical-align:middle; display:inline-block;"/>
+    </div>
+
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>minions
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://codeminions.github.io/2019/07/05/deepin%E6%8A%98%E8%85%BE%E8%AE%B0%E5%BD%95/" title="Deepin又一次折腾记录">http://codeminions.github.io/2019/07/05/deepin折腾记录/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          
+          <div class="post-tags">
+              <a href="/tags/%E6%8A%80%E8%83%BD%E5%B8%96/" rel="tag"><i class="fa fa-tag"></i> 技能帖</a>
+              <a href="/tags/Deepin/" rel="tag"><i class="fa fa-tag"></i> Deepin</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2019/04/30/View%E6%BB%91%E5%8A%A8%E5%AD%A6%E4%B9%A0%E5%BF%83%E5%BE%97/" rel="prev" title="View事件体系之滑动学习心得">
+      <i class="fa fa-chevron-left"></i> View事件体系之滑动学习心得
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2019/07/07/%E5%85%B3%E9%97%ADJVM%E5%AE%89%E5%85%A8%E8%BF%9E%E6%8E%A5/" rel="next" title="Idea报错：限制口令文件读取访问权限">
+      Idea报错：限制口令文件读取访问权限 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Deepin-15-10-2-stable"><span class="nav-number">1.</span> <span class="nav-text">Deepin 15.10.2 stable</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%89%E5%85%A8%E6%A8%A1%E5%BC%8F%E5%AE%89%E8%A3%85%E7%B3%BB%E7%BB%9F"><span class="nav-number">2.</span> <span class="nav-text">安全模式安装系统</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9B%B4%E6%96%B0%E8%BD%AF%E4%BB%B6%E5%88%97%E8%A1%A8%E5%8F%8A%E6%9B%B4%E6%8D%A2%E9%95%9C%E5%83%8F%E6%BA%90"><span class="nav-number">3.</span> <span class="nav-text">更新软件列表及更换镜像源</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%8B%AC%E6%98%BE%E9%97%AE%E9%A2%98%E5%BC%80%E5%A7%8B%E4%BD%9C%E5%A6%96"><span class="nav-number">4.</span> <span class="nav-text">独显问题开始作妖</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BE%85%E6%9C%BA%E5%90%8E%E6%97%A0%E6%B3%95%E5%94%A4%E9%86%92"><span class="nav-number">5.</span> <span class="nav-text">待机后无法唤醒</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#pcspkr%E9%97%AE%E9%A2%98%EF%BC%9F%EF%BC%9F"><span class="nav-number">6.</span> <span class="nav-text">pcspkr问题？？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%87%AD%E5%90%8D%E6%98%AD%E8%91%97%E7%9A%84Logo%E6%AD%BB%E6%9C%BA%E9%97%AE%E9%A2%98"><span class="nav-number">7.</span> <span class="nav-text">臭名昭著的Logo死机问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%87%E6%B3%A8%EF%BC%9A%E7%B3%BB%E7%BB%9F%E7%9A%84%E6%98%BE%E5%8D%A1%E9%A9%B1%E5%8A%A8%E7%AE%A1%E7%90%86%E5%99%A8%E4%B8%AD%E5%8E%9F%E6%9C%AC%E6%9C%89%E4%B8%80%E4%B8%AANV-PRIME%E6%96%B9%E6%A1%88%EF%BC%8C%E7%94%A8%E4%BA%8E%E6%B7%B7%E5%90%88%E6%98%BE%E5%8D%A1%E7%9A%84%E9%A9%B1%E5%8A%A8%E3%80%82%E4%BD%8615-10-2stable%E7%89%88%E6%9C%AC%E4%B8%AD%E5%AE%98%E6%96%B9%E7%A6%81%E7%94%A8%E4%BA%86prime%E6%96%B9%E6%A1%88%EF%BC%88%E6%9A%82%E6%97%B6%EF%BC%89%E3%80%82"><span class="nav-number">8.</span> <span class="nav-text">备注：系统的显卡驱动管理器中原本有一个NV-PRIME方案，用于混合显卡的驱动。但15.10.2stable版本中官方禁用了prime方案（暂时）。</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="minions"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">minions</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">34</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/CodeMinions" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;CodeMinions" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/atom.xml" title="rss → &#x2F;atom.xml"><i class="fa fa-rss fa-fw"></i>rss</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2018 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">minions</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> v4.2.0 & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.8.0 强力驱动
+  </div>
+  <div class="post-count> 
+    <span class="post-meta-item-icon">
+      <!-- <i class="fa fa-chart-area"></i> -->
+    </span>
+    <span title="post-meta-item-text">
+	博主minions已经码了
+	  151k
+	字辣  ~\(≧▽≦)/~
+    </span>
+    
+  </div>
+  <div class="busuanzi-count">
+    <span id="busuanzi_container_site_pv" style='display:none'>
+        ///▽///
+	本站已经被访问<span id="busuanzi_value_site_pv"></span>次	 	 
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: inline;">
+      <span class="post-meta-item-icon">
+        <!-- <i class="fa fa-user"></i> -->
+      </span>
+      <span class="site-uv" title="一共有">
+        <span id="busuanzi_value_site_uv"></span>人来过辣
+	♪( ´θ｀)ノ
+      </span>
+    </span>
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : true,
+      appId      : 'ksFXxiyOicesm1H1gQuK6RvU-MdYXbMMI',
+      appKey     : 'eswY6MY2MKFfOeYILl9HsUHo',
+      placeholder: "Just go go",
+      avatar     : 'retro',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      avatar_cdn:'https://www.gravatar.com/avatar/',
+      visitor    : false,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : '',
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

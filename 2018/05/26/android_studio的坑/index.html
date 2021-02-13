@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"codeminions.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="引入今天打开android studio发现屏幕上星星点点全是标红，一般gradle未build完成会出现这个情况所以我还是很淡定的。但是gradle建立完还是标红，但是run一切正常。仔细查看发现是有几个package导入失败了，原因是未找到。所以只能google。得到以下结果。   首先出现问题的话，肯定要rebuild project、重启andriod studio都先试一遍，甚至重启电">
+<meta property="og:type" content="article">
+<meta property="og:title" content="关于Android Studio标红的解决方法">
+<meta property="og:url" content="http://codeminions.github.io/2018/05/26/android_studio%E7%9A%84%E5%9D%91/index.html">
+<meta property="og:site_name" content="初学者">
+<meta property="og:description" content="引入今天打开android studio发现屏幕上星星点点全是标红，一般gradle未build完成会出现这个情况所以我还是很淡定的。但是gradle建立完还是标红，但是run一切正常。仔细查看发现是有几个package导入失败了，原因是未找到。所以只能google。得到以下结果。   首先出现问题的话，肯定要rebuild project、重启andriod studio都先试一遍，甚至重启电">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://codeminions.github.io/2018/05/26/android_studio%E7%9A%84%E5%9D%91/清理build缓存.png">
+<meta property="og:image" content="http://codeminions.github.io/2018/05/26/android_studio%E7%9A%84%E5%9D%91/手动添加依赖.png">
+<meta property="article:published_time" content="2018-05-26T08:06:00.000Z">
+<meta property="article:modified_time" content="2018-05-25T16:00:00.000Z">
+<meta property="article:author" content="minions">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://codeminions.github.io/2018/05/26/android_studio%E7%9A%84%E5%9D%91/清理build缓存.png">
+
+<link rel="canonical" href="http://codeminions.github.io/2018/05/26/android_studio%E7%9A%84%E5%9D%91/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>关于Android Studio标红的解决方法 | 初学者</title>
+  
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?2e98ba91428e00ba53246c847babdd82";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="初学者" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">初学者</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/CodeMinions" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://codeminions.github.io/2018/05/26/android_studio%E7%9A%84%E5%9D%91/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="minions">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="初学者">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          关于Android Studio标红的解决方法
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2018-05-26 16:06:00 / 修改时间：00:00:00" itemprop="dateCreated datePublished" datetime="2018-05-26T16:06:00+08:00">2018-05-26</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Code/" itemprop="url" rel="index"><span itemprop="name">Code</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2018/05/26/android_studio%E7%9A%84%E5%9D%91/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2018/05/26/android_studio%E7%9A%84%E5%9D%91/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>1.6k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>1 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <blockquote>
+<h2 id="引入"><a href="#引入" class="headerlink" title="引入"></a>引入</h2><p>今天打开android studio发现屏幕上星星点点全是标红，一般gradle未build完成会出现这个情况所以我还是很淡定的。但是gradle建立完还是标红，但是run一切正常。仔细查看发现是有几个package导入失败了，原因是未找到。所以只能google。<br>得到以下结果。</p>
+</blockquote>
+<hr>
+<p>首先出现问题的话，肯定要rebuild project、重启andriod studio都先试一遍，甚至重启电脑、从SVN下载重新导入，因为android studio其实还是有些bug。</p>
+<a id="more"></a>
+<h2 id="Java类标红情况"><a href="#Java类标红情况" class="headerlink" title="Java类标红情况"></a>Java类标红情况</h2><p>其实是build缓存的问题，清除build缓存后即可解决。<br><img src="/2018/05/26/android_studio%E7%9A%84%E5%9D%91/清理build缓存.png" alt="清理build缓存"></p>
+<h2 id="R文件标红情况："><a href="#R文件标红情况：" class="headerlink" title="R文件标红情况："></a>R文件标红情况：</h2><ol>
+<li><p>布局文件出错或资源文件出错(拼写错误)，根据Message提示内容去找（常见错误）</p>
+</li>
+<li><p>File–&gt;Project Structure–&gt;选择项目名–&gt;修改 Build Tools Version–&gt;再改回来–&gt;（常用方法）</p>
+</li>
+<li><p>在同一java包中新建一个R.class类，此时R就不标红了然后运行程序，R文件将自动生成，这时就可以把刚刚的R.class删除啦</p>
+</li>
+<li><p>选择 Tools–&gt;Android–&gt;Sync Project With Gradle Files</p>
+</li>
+<li><p>删掉R文件代码段，clean Project将自动生成R文件</p>
+</li>
+<li><p>强行运行程序，失败了运行2次，有时候R就正常了</p>
+</li>
+<li><p>修改API</p>
+</li>
+</ol>
+<h2 id="最后"><a href="#最后" class="headerlink" title="最后"></a>最后</h2><p>Android Studio的坑其实很多，因为他毕竟也不大成熟。有时候把标红的地方注释掉，run一遍重启，也许他就好了。有时候，电脑尤其是笔记本性能不是很好的情况下，也会出现bug。<br>其实我的问题这些都无解，最后解决是<strong>重新建立了project，将代码copy一遍</strong>就ok了。感觉可能是我linux和windows下分别都有SDK，使用过程中切来切去出现的错误，所以在linux下重建后就可以了。听说这个方法其实也是挺万能的。</p>
+<hr>
+<h3 id="6-5更新"><a href="#6-5更新" class="headerlink" title="6.5更新"></a>6.5更新</h3><ul>
+<li>今天打开Android Studio新建一个项目，结果一直刷不出preview，一片空白连个屏幕都没有，build没有问题。运行提示select SDK，但是打开Project Structure发现SDK的路径没问题啊。然后我就想到了<strong>把Build Tools Version</strong>改完再改回来。居然自动rebuild后瞬间解决。但我仍然不知道为什么 <code>=_=</code>…</li>
+<li>然后顺便提一个今天遇到的bug。<blockquote>
+<p>too many padding sections on bottom border</p>
+</blockquote>
+</li>
+</ul>
+<p>build之后报以上错误，原因是.9文件出了问题。Android Studio对图片的要求很高，只要把这些图删了就没有问题了。</p>
+<hr>
+<h3 id="6-9更新"><a href="#6-9更新" class="headerlink" title="6.9更新"></a>6.9更新</h3><ul>
+<li>今天终于找到解决最开始那个问题的方法了，copy是最傻的办法。因为我发现标红的都是需要添加依赖的package，所以我在build.gradle重新添加了一遍相关依赖，问题就消除了。</li>
+</ul>
+<hr>
+<h3 id="7-27更新"><a href="#7-27更新" class="headerlink" title="7.27更新"></a>7.27更新</h3><ul>
+<li>最近被Studio坑的体无完肤，每天打开AS一半的时间是在解决昨天还好好的代码突然一片红光，但也get了几个技能。</li>
+</ul>
+<h5 id="重载Gradle"><a href="#重载Gradle" class="headerlink" title="重载Gradle"></a>重载Gradle</h5><ul>
+<li>删除.gradle文件重新Make Project，即重新下载gradle文件，或者留下wrapper中的<strong>gradle-4.1-milestone-1-all.zip</strong>，Studio锤后会对其进行解压与相关依赖的下载。但这其实十分费时，所以是下下策。</li>
+</ul>
+<h5 id="关于导包失败"><a href="#关于导包失败" class="headerlink" title="关于导包失败"></a>关于导包失败</h5><ul>
+<li>最经常导包失败，或者说异常的，不外乎recyclerView了。今天发现一个问题，有可能是该包版本过旧。<br>打开 Project Structure -&gt; Dependencies，删除原有的包，通过右边的加号，搜索包名重新添加包，此时可以找的该包的<strong>最新版本</strong>。Rebuild之后即可。如图：<br><img src="/2018/05/26/android_studio%E7%9A%84%E5%9D%91/手动添加依赖.png" alt="手动添加依赖"></li>
+</ul>
+<ul>
+<li>还有一件事，，有时候添加依赖时报错，先检查拼写，然后多build几次，缘分到了就没问题了啦[滑稽]。<br>参考博客: <a target="_blank" rel="noopener" href="https://blog.csdn.net/keepfriend/article/details/76040045">https://blog.csdn.net/keepfriend/article/details/76040045</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <div style=" width:100%; text-align:center; margin-left:15px; margin-right:15px;">
+	<hr style="width:30%;vertical-align:middle; display:inline-block;"/>  
+	    完结 
+	    <i class="fa fa-paw"></i> 
+	     撒花 ฅ&gt;ω&lt;*ฅ  
+	<hr style="width:30%;vertical-align:middle; display:inline-block;"/>
+    </div>
+
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>minions
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://codeminions.github.io/2018/05/26/android_studio%E7%9A%84%E5%9D%91/" title="关于Android Studio标红的解决方法">http://codeminions.github.io/2018/05/26/android_studio的坑/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2018/05/21/Java%E4%B8%AD%E5%8F%AF%E5%8F%98%E9%95%BF%E5%8F%82%E6%95%B0/" rel="prev" title="Java可变参数">
+      <i class="fa fa-chevron-left"></i> Java可变参数
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2018/06/08/%E4%BD%8E%E4%BB%BF%E5%BE%AE%E4%BF%A1%E8%81%8A%E5%A4%A9%E7%95%8C%E9%9D%A2%E7%9A%84%E5%AE%9E%E7%8E%B0/" rel="next" title="低仿微信聊天界面的实现">
+      低仿微信聊天界面的实现 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BC%95%E5%85%A5"><span class="nav-number">1.</span> <span class="nav-text">引入</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Java%E7%B1%BB%E6%A0%87%E7%BA%A2%E6%83%85%E5%86%B5"><span class="nav-number">2.</span> <span class="nav-text">Java类标红情况</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#R%E6%96%87%E4%BB%B6%E6%A0%87%E7%BA%A2%E6%83%85%E5%86%B5%EF%BC%9A"><span class="nav-number">3.</span> <span class="nav-text">R文件标红情况：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%80%E5%90%8E"><span class="nav-number">4.</span> <span class="nav-text">最后</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#6-5%E6%9B%B4%E6%96%B0"><span class="nav-number">4.1.</span> <span class="nav-text">6.5更新</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-9%E6%9B%B4%E6%96%B0"><span class="nav-number">4.2.</span> <span class="nav-text">6.9更新</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-27%E6%9B%B4%E6%96%B0"><span class="nav-number">4.3.</span> <span class="nav-text">7.27更新</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E9%87%8D%E8%BD%BDGradle"><span class="nav-number">4.3.0.1.</span> <span class="nav-text">重载Gradle</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%85%B3%E4%BA%8E%E5%AF%BC%E5%8C%85%E5%A4%B1%E8%B4%A5"><span class="nav-number">4.3.0.2.</span> <span class="nav-text">关于导包失败</span></a></li></ol></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="minions"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">minions</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">34</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/CodeMinions" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;CodeMinions" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/atom.xml" title="rss → &#x2F;atom.xml"><i class="fa fa-rss fa-fw"></i>rss</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2018 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">minions</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> v4.2.0 & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.8.0 强力驱动
+  </div>
+  <div class="post-count> 
+    <span class="post-meta-item-icon">
+      <!-- <i class="fa fa-chart-area"></i> -->
+    </span>
+    <span title="post-meta-item-text">
+	博主minions已经码了
+	  151k
+	字辣  ~\(≧▽≦)/~
+    </span>
+    
+  </div>
+  <div class="busuanzi-count">
+    <span id="busuanzi_container_site_pv" style='display:none'>
+        ///▽///
+	本站已经被访问<span id="busuanzi_value_site_pv"></span>次	 	 
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: inline;">
+      <span class="post-meta-item-icon">
+        <!-- <i class="fa fa-user"></i> -->
+      </span>
+      <span class="site-uv" title="一共有">
+        <span id="busuanzi_value_site_uv"></span>人来过辣
+	♪( ´θ｀)ノ
+      </span>
+    </span>
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : true,
+      appId      : 'ksFXxiyOicesm1H1gQuK6RvU-MdYXbMMI',
+      appKey     : 'eswY6MY2MKFfOeYILl9HsUHo',
+      placeholder: "Just go go",
+      avatar     : 'retro',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      avatar_cdn:'https://www.gravatar.com/avatar/',
+      visitor    : false,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : '',
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>
