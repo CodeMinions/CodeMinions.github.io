@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"codeminions.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="最近尝试使用Arduino配合esp8266实现远程控制Arduino上外接的某些模块，于是开始一边摸索一遍折腾开始了一周的尝试，期间得到很一些对自己很有用的经验，遂记录。本次使用的策略是Arduino通过串口与esp8266通信，esp8266通过wifi连接到网络，然后通过mqtt协议订阅模块的操作信息，客户端就可以通过远程向mqtt发送相关主题的操作信息从而控制Arduino做出相应的约定">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Arduino+Esp8266实现远程的模块控制">
+<meta property="og:url" content="http://codeminions.github.io/2021/02/14/Arduino/index.html">
+<meta property="og:site_name" content="初学者">
+<meta property="og:description" content="最近尝试使用Arduino配合esp8266实现远程控制Arduino上外接的某些模块，于是开始一边摸索一遍折腾开始了一周的尝试，期间得到很一些对自己很有用的经验，遂记录。本次使用的策略是Arduino通过串口与esp8266通信，esp8266通过wifi连接到网络，然后通过mqtt协议订阅模块的操作信息，客户端就可以通过远程向mqtt发送相关主题的操作信息从而控制Arduino做出相应的约定">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://codeminions.github.io/2021/02/14/Arduino/IOT%20MCU.png">
+<meta property="og:image" content="http://codeminions.github.io/2021/02/14/Arduino/Servo.png">
+<meta property="og:image" content="http://codeminions.github.io/2021/02/14/Arduino/first.png">
+<meta property="og:image" content="http://codeminions.github.io/2021/02/14/Arduino/end.png">
+<meta property="article:published_time" content="2021-02-13T16:00:00.000Z">
+<meta property="article:modified_time" content="2021-02-13T16:00:00.000Z">
+<meta property="article:author" content="minions">
+<meta property="article:tag" content="技能帖">
+<meta property="article:tag" content="MQTT">
+<meta property="article:tag" content="Arduino">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://codeminions.github.io/2021/02/14/Arduino/IOT%20MCU.png">
+
+<link rel="canonical" href="http://codeminions.github.io/2021/02/14/Arduino/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Arduino+Esp8266实现远程的模块控制 | 初学者</title>
+  
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?2e98ba91428e00ba53246c847babdd82";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="初学者" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">初学者</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/CodeMinions" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://codeminions.github.io/2021/02/14/Arduino/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="minions">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="初学者">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Arduino+Esp8266实现远程的模块控制
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-02-14 00:00:00" itemprop="dateCreated datePublished" datetime="2021-02-14T00:00:00+08:00">2021-02-14</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Code/" itemprop="url" rel="index"><span itemprop="name">Code</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2021/02/14/Arduino/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/02/14/Arduino/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>14k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>12 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <blockquote>
+<p>最近尝试使用Arduino配合esp8266实现远程控制Arduino上外接的某些模块，于是开始一边摸索一遍折腾开始了一周的尝试，期间得到很一些对自己很有用的经验，遂记录。<br>本次使用的策略是Arduino通过串口与esp8266通信，esp8266通过wifi连接到网络，然后通过mqtt协议订阅模块的操作信息，客户端就可以通过远程向mqtt发送相关主题的操作信息从而控制Arduino做出相应的约定动作。</p>
+</blockquote>
+<a id="more"></a>
+<h1 id="使用硬件信息"><a href="#使用硬件信息" class="headerlink" title="使用硬件信息"></a>使用硬件信息</h1><ul>
+<li>国版Ardunio Uno Rev3【<a target="_blank" rel="noopener" href="https://www.arduino.cc/en/guide/MacOSX?setlang=cn">MacOS搭建ardunio环境</a>】</li>
+<li>Esp8266-01s</li>
+<li>动作模块使用舵机（或者灯泡等）</li>
+</ul>
+<h2 id="关于ESP8266"><a href="#关于ESP8266" class="headerlink" title="关于ESP8266"></a>关于ESP8266</h2><p>ESP8266存在3中工作模式：STA，AP，STA+AP<br>Sta模式: Station，类似于无线终端，本身不接受无线接入，可连接到AP，也就是可以连接wifi。一般无线网卡即工作在该模式<br>AP模式：相当于路由器，自己发射WiFi，终端可以连接上它，但是无法像sta模式那样连接其他WiFi。<br>STA+AP模式：既可以自己发射WiFi供其他终端连接，又可以做终端连接其他WiFi。这也是默认的出厂模式。 </p>
+<p>ESP8266默认携带AT固件，支持AT指令，通过AT指令可以实现模式切换，修改波特率，Wifi连接，TCP连接等功能。<br>当然，使用不同的固件实现的功能也将不同。例如这里的<a target="_blank" rel="noopener" href="http://www.piaoyi.org/iot/ESP8266-MQTT-AT-lewei50.html">支持mqtt的AT固件</a></p>
+<h1 id="Arduino与8266的串口通信"><a href="#Arduino与8266的串口通信" class="headerlink" title="Arduino与8266的串口通信"></a>Arduino与8266的串口通信</h1><p>ESP8266与Arduino的接线，软硬串口的通信可以参见<a target="_blank" rel="noopener" href="https://www.jianshu.com/p/cde9f7072eab">这篇文章</a>。</p>
+<h2 id="ESP8266AT指令不可用"><a href="#ESP8266AT指令不可用" class="headerlink" title="ESP8266AT指令不可用"></a>ESP8266AT指令不可用</h2><p>Arduino接上8266之后，通过串口发送AT指令没有响应。于是尝试重刷esp8266的支持AT指令固件</p>
+<div class="note info">
+            <p><strong>ESP8266重刷固件</strong></p><ul><li>在乐鑫官网获取<a target="_blank" rel="noopener" href="https://www.espressif.com/zh-hans/support/download/other-tools?keys=flash+&amp;field_type_tid%5B%5D=14">下载工具</a>【需要在windows下使用】</li><li>同样在乐鑫官网获取所需的<a target="_blank" rel="noopener" href="https://www.espressif.com/zh-hans/support/download/at">AT固件</a></li><li>下载工具和固件使用方式可以参考<a target="_blank" rel="noopener" href="http://www.piaoyi.org/iot/espressif-ESP8266-MQTT-AT.html">这篇文章</a>。烧录使用的连接模块，我使用的是学弟借的ESP专用的U转串模块，插上即用（下图）。也有人使用pl2303。<br><img src="/2021/02/14/Arduino/IOT MCU.png" alt="IOTMCU CH340C ESP8266 ESP-01 Prog WIFI下载器"></li></ul>
+          </div>
+<div class="note warning">
+            <p>重刷了固件之后AT指令还是没有生效。排除了接线问题，看到<a target="_blank" rel="noopener" href="https://blog.csdn.net/Sandman06/article/details/112132550">这篇文章</a>提示，有可能是<strong>供电不足的原因</strong>。<br>重新紧了一下线，重插电源线（3.3V），8266的蓝灯一闪，然后微弱发光，这时候AT指令就生效了。（我使用的是MBP笔记本雷电口+usb转接器）<br><a target="_blank" rel="noopener" href="https://www.bilibili.com/video/av50778938/">b站有个大佬</a>提供了一个使用外部电源输入的实现方式。<br><strong>所以AT指令不生效的情况，可以考虑一下供电的问题</strong></p>
+          </div>
+<h1 id="ESP8266连接wifi与MQTT服务器"><a href="#ESP8266连接wifi与MQTT服务器" class="headerlink" title="ESP8266连接wifi与MQTT服务器"></a>ESP8266连接wifi与MQTT服务器</h1><p>紧接着是8266上的代码编写，需要实现</p>
+<ul>
+<li>Wifi连接</li>
+<li>MQTT服务通信</li>
+<li>通过串口发送消息到Arduino</li>
+</ul>
+<h2 id="ESP8266代码烧录"><a href="#ESP8266代码烧录" class="headerlink" title="ESP8266代码烧录"></a>ESP8266代码烧录</h2><h3 id="ESP8266代码编写"><a href="#ESP8266代码编写" class="headerlink" title="ESP8266代码编写"></a>ESP8266代码编写</h3><p>ESP8266的代码可以使用ArduinoIDE编写，同时支持8266板的库函数管理相关。也可以使用VSCode安装PlatformIO扩展，然后在PlatformIO里安装相关应用库。<br>使用ArduinoIDE，需要先安装esp8266的开发板支持。否则使用如<code>ESP8266WiFi.h</code>这样的库函数会报错<code>sketch_apr17a:15:10: error: ESP8266WiFi.h: No such file or directory</code></p>
+<ul>
+<li>打开Arduino的设置页，在<code>附加开发版管理网址</code>中填入<code>http://arduino.esp8266.com/stable/package_esp8266com_index.json</code></li>
+<li>打开<code>工具&gt;开发板&gt;开发板管理器</code>搜索esp8266，点击安装</li>
+<li>安装成功以后即可在开发板选项中看到<code>ESP8266 Board</code>，选择<code>ESP8266 Module</code>，就可以使用8266的库函数进行开发。注意esp8266代码编译和上传（烧录）时，需要确认开发板和端口的选择，否则可能会失败</li>
+</ul>
+<div class="note warning">
+            <p><strong>8266开发板支持包下载失败</strong><br>曾经在学校安装支持包速度蹭蹭，在家却是龟速+反复失败。于是想到了<a target="_blank" rel="noopener" href="http://www.gaohaiyan.com/2573.html">手动下载安装</a>：</p><ul><li>浏览器打开<code>http://arduino.esp8266.com/stable/package_esp8266com_index.json</code>，可以看到其实是一大段记录支持包所需要的依赖包的地址（有点类似npm的package.json）</li><li>最主要的<code>esp8266-2.7.4.zip</code>，通过github下载其实速度还是感人。后来使用迅雷，10秒结束战斗！！真是个防止浪费生命的神器。</li><li>需要放到<code>/Library/Arduino15/staging/packages</code>目录下，再点击安装，就会跳过这个包了</li><li>还有一些零碎的依赖，看起来主要是根据不同的编译环境的一些不同包，上边的博客中提到可以把所有带osx，apple的都下下来。经过实际测试，应该不需要，主要是以下几个包。（测试使用笨方法，即点击安装，下载过程会在上述文件中生成文件，然后经过文件名到上边依赖包目录找到对应文件及地址进行下载，所以可能有一些比较小下载极快的这里就不列出来）<ul><li>x86_64-apple-darwin14.xtensa-lx106-elf-b40a506.1563313032.tar.gz</li><li>x86_64-apple-darwin14.mkspiffs-7fefeac.1563313032.tar.gz</li><li>x86_64-apple-darwin14.mklittlefs-fe5bb56.1578453304.tar.gz</li><li>python3-macosx-portable.tar.gz</li></ul></li></ul>
+          </div>
+<div class="note warning">
+            <p><strong>pyserial or esptool directories not found next to this upload.py tool</strong><br>编译代码时出现以上报错。翻阅一堆博客论坛，找到了解决方法，并且有可能是MacOSBigSur的问题。</p><ol><li>下载 <a target="_blank" rel="noopener" href="https://github.com/espressif/esptool/archive/v3.0.zip">https://github.com/espressif/esptool/archive/v3.0.zip</a></li><li>下载 <a target="_blank" rel="noopener" href="https://github.com/pyserial/pyserial/archive/v3.4.zip">https://github.com/pyserial/pyserial/archive/v3.4.zip</a></li><li>下载解压出文件夹<code>esptool/</code>和<code>pyserial/</code>放到<code>~/Library/Arduino15/packages/esp8266/hardware/esp8266/2.7.4/tools/</code>文件夹下，替换原有的文件，具体点进目录中，根据文件名应该就明白了<br><strong><a target="_blank" rel="noopener" href="https://www.esp8266.com/viewtopic.php?p=89446">参考链接</a></strong></li></ol>
+          </div>
+<h3 id="Esp8266代码烧录"><a href="#Esp8266代码烧录" class="headerlink" title="Esp8266代码烧录"></a>Esp8266代码烧录</h3><p>esp8266通过Arduino板子连接PC进行代码烧录，始终出现问题。说始终是因为前几个月就因为这个问题导致有个小项目搁置，所以出现这个问题也算是意料之中吧。<br>主要现象是代码编译通过以后点击上传，始终出现<code>Connecting...</code>打点，过会就出现<strong><code>Failed to connect to ESP32: Timed out waiting for packet header</code></strong>的报错，上传失败。使用的接线是</p>
+<blockquote>
+<p>将UTXD接到串口模块的TX上，CH_PD和VCC接3.3V，GND和GPIO0接GND<br>这是烧录模式，如果要工作的话请将GPIO0脚悬空，即断开，否则设备不会正常工作！</p>
+</blockquote>
+<p>找到<a target="_blank" rel="noopener" href="https://randomnerdtutorials.com/solved-failed-to-connect-to-esp32-timed-out-waiting-for-packet-header/">一篇帖子</a>，其中说解决方式是在8266<code>EN</code>和<code>GND</code>之间外接一个10uF的电容。感觉…不太实际，没有尝试。</p>
+<p>后来看<a target="_blank" rel="noopener" href="http://www.gaohaiyan.com/2573.html">这篇博客</a>时，发现它实际上也有说到这个问题。提到需要先断开8266的<code>EN</code>和<code>IO0</code>，然后在<code>Connecting..</code>打点时，<code>IO0</code>接地，<code>EN</code>接3.3V，程序可以继续烧录，否则会出现以上报错。帖子中提到该方式的成功率不高，确实我一直没有成功，它说还是使用U转串（下载器）进行烧录比较好。（我…怎么没有想到）</p>
+<p>帖子中提到的，需要安装驱动，但是我没有，直接插上，点击上传就烧录了==，很成功，就像重刷固件一样，connecting之后log会显示烧写的地址位。同样，需要注意切换端口。</p>
+<p><strong>实际上我看了<a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_39098367/article/details/87521226">这篇博客</a>才意识到了（是的 才），实际上烧录程序和输入固件是一样的，固件实际上也是包装好的程序，比如AT固件实际上只是就只通过接受串口的固定格式的数据（AT指令），然后操作并返回结果信息的程序罢了，而所谓的需要注意默认的波特率，是因为程序中<code>Serial.begin</code>同样的使用了该波特率罢了。</strong></p>
+<p>走通了代码的编写和烧录流程，接下来终于可以愉快的写代码了。</p>
+<h2 id="ESP8266代码编写-1"><a href="#ESP8266代码编写-1" class="headerlink" title="ESP8266代码编写"></a>ESP8266代码编写</h2><h3 id="ESP8266串口通信"><a href="#ESP8266串口通信" class="headerlink" title="ESP8266串口通信"></a>ESP8266串口通信</h3><p>在8266上发送串口数据和Arduino其实一样<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Serial.begin();		<span class="comment">// 指定串口波特率，注意通信的另一端（Arduino）需要统一波特率</span></span><br><span class="line">Serial.println();	<span class="comment">// 输出数据。此外8266上的Serial对象还支持printf格式化输出方式</span></span><br></pre></td></tr></table></figure></p>
+<h3 id="ESP8266连接Wifi"><a href="#ESP8266连接Wifi" class="headerlink" title="ESP8266连接Wifi"></a>ESP8266连接Wifi</h3><p>使用8266开发板自带库函数头文件<code>ESP8266Wifi.h</code>，很方便实现Wifi连接。基本代码如下<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">WiFi.begin(<span class="keyword">char</span>* ssid, <span class="keyword">char</span>* password);		<span class="comment">// 传入Wifi名和密码，开始连接</span></span><br><span class="line"><span class="keyword">if</span> (Wifi.status() != WL_CONNECTED)		<span class="comment">// 确认连接状态</span></span><br></pre></td></tr></table></figure><br>具体代码示例：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;ESP8266WiFi.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> <span class="keyword">char</span>* ssid     = <span class="string">&quot;ESP8266 需要连接的WIFI的SSID&quot;</span>;</span><br><span class="line"><span class="keyword">const</span> <span class="keyword">char</span>* password = <span class="string">&quot;Wifi密码&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">setup</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  Serial.begin(<span class="number">9600</span>);</span><br><span class="line">  delay(<span class="number">10</span>);</span><br><span class="line">  Serial.print(<span class="string">&quot;Connecting to &quot;</span>);</span><br><span class="line"></span><br><span class="line">  <span class="comment">/* 明确将ESP8266设置为WiFi客户端，否则默认情况下，它将尝试同时充当客户端和接入点，并可能导致WiFi网络上的其他WiFi设备出现网络问题 */</span></span><br><span class="line">  WiFi.mode(WIFI_STA);</span><br><span class="line">  <span class="comment">// 开始连接</span></span><br><span class="line">  WiFi.begin(ssid, password);</span><br><span class="line">  <span class="comment">// 状态确认</span></span><br><span class="line">  <span class="keyword">while</span> (WiFi.status() != WL_CONNECTED) &#123;</span><br><span class="line">    delay(<span class="number">500</span>);</span><br><span class="line">    Serial.print(<span class="string">&quot;.&quot;</span>);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// 连接成功</span></span><br><span class="line">  Serial.println(<span class="string">&quot;WiFi connected&quot;</span>);</span><br><span class="line">  Serial.println(<span class="string">&quot;IP address: &quot;</span>);</span><br><span class="line">  Serial.println(WiFi.localIP());</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">int</span> whetherConnect = <span class="number">0</span>;</span><br><span class="line">WiFiClient client;</span><br><span class="line"><span class="keyword">const</span> <span class="keyword">uint16_t</span> port = <span class="number">8082</span>;</span><br><span class="line"><span class="keyword">const</span> <span class="keyword">char</span> * host = <span class="string">&quot;你的IP&quot;</span>; <span class="comment">// ip or dns</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">loop</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  <span class="comment">// 确认socket连接状态</span></span><br><span class="line">  <span class="keyword">if</span> (client.connected() == <span class="literal">true</span>)</span><br><span class="line">    whetherConnect = <span class="number">1</span>;</span><br><span class="line">  <span class="keyword">else</span></span><br><span class="line">    whetherConnect = <span class="number">0</span>;</span><br><span class="line">  <span class="keyword">if</span> (whetherConnect == <span class="number">0</span>) &#123;</span><br><span class="line">    Serial.print(<span class="string">&quot;connecting to &quot;</span> + host);</span><br><span class="line">    <span class="keyword">if</span> (!client.connect(host, port)) &#123;</span><br><span class="line">      Serial.println(<span class="string">&quot;connection failed \n wait 5 sec...&quot;</span>);</span><br><span class="line">      <span class="keyword">return</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      whetherConnect = <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (Serial.available()) &#123;</span><br><span class="line">    <span class="comment">// 读取硬串口</span></span><br><span class="line">    <span class="keyword">if</span> (Serial.read() == <span class="string">&#x27;#&#x27;</span>) &#123;</span><br><span class="line">      <span class="comment">// 获取ssid列表</span></span><br><span class="line">      <span class="keyword">int</span> n = WiFi.scanNetworks();</span><br><span class="line">      Serial.println(<span class="string">&quot;scan done&quot;</span>);</span><br><span class="line">      <span class="keyword">if</span> (n == <span class="number">0</span>) &#123;</span><br><span class="line">        client.println(<span class="string">&quot;no networks found&quot;</span>);</span><br><span class="line">      &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        client.println(n + <span class="string">&quot; networks found&quot;</span>);</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; n; ++i) &#123;</span><br><span class="line">          <span class="comment">// Print SSID and RSSI for each network found</span></span><br><span class="line">          client.print(WiFi.SSID(i));</span><br><span class="line">          client.println(WiFi.RSSI(i));</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="comment">// This will send the request to the server</span></span><br><span class="line">      client.println(<span class="string">&quot;------------------------------------------&quot;</span>);</span><br><span class="line"></span><br><span class="line">      <span class="comment">//read back one line from server</span></span><br><span class="line">      Serial.println(client.readStringUntil(<span class="string">&#x27;\r&#x27;</span>));</span><br><span class="line">      Serial.println(<span class="string">&quot;closing connection&quot;</span>);</span><br><span class="line">      client.stop();</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="ESP8266与MQTT协议"><a href="#ESP8266与MQTT协议" class="headerlink" title="ESP8266与MQTT协议"></a>ESP8266与MQTT协议</h3><p>库管理中导入<code>PubSubClient.h</code>头文件，实现MQTT服务端的连接以及消息的订阅和发布。代码也不复杂<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">WiFiClient espClient;</span><br><span class="line"><span class="function">PubSubClient <span class="title">client</span><span class="params">(espClient)</span></span>;</span><br><span class="line"></span><br><span class="line">client.setServer(<span class="keyword">char</span>* server_ip, <span class="keyword">int</span> port);	<span class="comment">// 设置服务器IP和端口（思考，如果IP下还带有子目录该如何实现？）</span></span><br><span class="line">client.setCallback(callback);			<span class="comment">// 设置回调，当有消息传入时会执行该回调</span></span><br><span class="line">client.connected();				<span class="comment">// 判断连接状态</span></span><br><span class="line">client.connect(String clientId);		<span class="comment">// 开始连接，传入客户端ID</span></span><br><span class="line">client.publish(<span class="keyword">char</span>* topic, <span class="keyword">char</span>* msg);		<span class="comment">// 消息发布</span></span><br><span class="line">client.subscribe(<span class="keyword">char</span>* topic);			<span class="comment">// 消息订阅</span></span><br><span class="line">client.loop();					<span class="comment">// 处理保持活动信号，以及处理传入消息</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">callback</span><span class="params">(<span class="keyword">char</span> *topic, byte * payload, <span class="keyword">unsigned</span> <span class="keyword">int</span> length)</span> </span>&#123;	&#125;	<span class="comment">// 主题，消息，消息长度</span></span><br></pre></td></tr></table></figure><br>具体代码示例：<a target="_blank" rel="noopener" href="https://www.emqx.cn/blog/esp8266-connects-to-the-public-mqtt-broker">参考</a><br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;ESP8266WiFi.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;PubSubClient.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> <span class="keyword">char</span>* ssid     = <span class="string">&quot;ESP8266 需要连接的WIFI的SSID&quot;</span>;</span><br><span class="line"><span class="keyword">const</span> <span class="keyword">char</span>* password = <span class="string">&quot;Wifi密码&quot;</span>;</span><br><span class="line"><span class="keyword">const</span> <span class="keyword">char</span>* mqtt_server = <span class="string">&quot;MQTT服务器IP&quot;</span>;</span><br><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> mqtt_port     = MQTT服务端口;</span><br><span class="line"></span><br><span class="line">WiFiClient espClient;</span><br><span class="line"><span class="function">PubSubClient <span class="title">client</span><span class="params">(espClient)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">setup</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  Serial.begin(<span class="number">9600</span>);</span><br><span class="line">  Serial.println(<span class="string">&quot;Connecting to &quot;</span>);</span><br><span class="line">  </span><br><span class="line">  connectWiFi();	<span class="comment">// wifi连接如上文</span></span><br><span class="line"></span><br><span class="line">  client.setServer(mqtt_server, mqtt_port);</span><br><span class="line">  client.setCallback(callback);</span><br><span class="line">  <span class="keyword">while</span> (!client.connected()) &#123;</span><br><span class="line">    String client_id = String(WiFi.macAddress());</span><br><span class="line">    Serial.println(<span class="string">&quot;Connecting to public emqx mqtt broker.....&quot;</span>);</span><br><span class="line">    <span class="keyword">if</span> (client.connect(client_id.c_str())) &#123;</span><br><span class="line">      Serial.println(<span class="string">&quot;Public emqx mqtt broker connected&quot;</span>);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      Serial.print(<span class="string">&quot;failed with state &quot;</span>);</span><br><span class="line">      Serial.print(client.state());</span><br><span class="line">      delay(<span class="number">2000</span>);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  Serial.println(<span class="string">&quot;start to subsc&quot;</span>);</span><br><span class="line">  <span class="keyword">char</span>* topic = <span class="string">&quot;hello&quot;</span>;</span><br><span class="line">  client.publish(topic, <span class="string">&quot;hello emqx&quot;</span>);</span><br><span class="line">  client.subscribe(topic);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">callback</span><span class="params">(<span class="keyword">char</span> *topic, byte * payload, <span class="keyword">unsigned</span> <span class="keyword">int</span> length)</span> </span>&#123;</span><br><span class="line">  Serial.print(<span class="string">&quot;Message arrived in topic: &quot;</span>);</span><br><span class="line">  Serial.println(topic);</span><br><span class="line">  Serial.<span class="built_in">printf</span>(<span class="string">&quot;Message:(%d)  &quot;</span>, length);</span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; length; i++) &#123;</span><br><span class="line">    Serial.print((<span class="keyword">char</span>) payload[i]);</span><br><span class="line">  &#125;</span><br><span class="line">  Serial.println();</span><br><span class="line">  Serial.println(<span class="string">&quot;-----------------------&quot;</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">loop</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  client.loop();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><br>还有大佬对PubSubClient库进行进一步封装实现了一个库。<a target="_blank" rel="noopener" href="https://www.arduino.cn/thread-85101-1-2.html">可以看看这个</a><br>以及大佬编写的，关于客户端状态返回码的注释。如果连接MQTT服务器失败返回了状态码可以参考一下</p>
+<blockquote>
+<p>int - 客户端状态，可以采用以下值 (常量定义在 PubSubClient.h):<br>-4 : MQTT_ CONNECTION_ TIMEOUT - 服务器在保持活动时间内没有响应。<br>-3 : MQTT_ CONNECTION_ LOST - 网络连接中断。<br>-2 : MQTT_ CONNECT_ FAILED - 网络连接失败。<br>-1 : MQTT_ DISCONNECTED - 客户端干净地断开连接。<br>0 : MQTT_ CONNECTED - 客户端已连接。<br>1 : MQTT_ CONNECT_ BAD_ PROTOCOL - 服务器不支持请求的MQTT版本。<br>2 : MQTT_ CONNECT_ BAD_ CLIENT_ ID - 服务器拒绝了客户端标识符。<br>3 : MQTT_ CONNECT_ UNAVAILABLE - 服务器无法接受连接。<br>4 : MQTT_ CONNECT_ BAD_ CREDENTIALS - 用户名/密码被拒绝。<br>5 : MQTT_ CONNECT_ UNAUTHORIZED - 客户端无权连接。</p>
+</blockquote>
+<h2 id="关于MQTT"><a href="#关于MQTT" class="headerlink" title="关于MQTT"></a>关于MQTT</h2><p>对于MQTT，此前一直不了解，这几天查了些资料，根据自己的理解对MQTT进行了简单的介绍，大概是对TCP协议进一步封装的一个应用层协议，主要是消息订阅与发布广播的机制。可以看看<a href="../../../../2021/02/25/mqtt/">我对于MQTT的认识</a></p>
+<p>查阅过程中，看到Arduino社区一位大佬写下的<a target="_blank" rel="noopener" href="https://www.arduino.cn/thread-82851-1-1.html">科普贴</a>，觉得对理解MQTT还是很有帮助。<br>以及如果有node.js的环境，也可以使用node.js搭建MQTT服务器和客户端，实现消息的发送订阅。使用<code>mosca</code>库3 5行就可以实现。</p>
+<h1 id="Arduino接收信息并输出"><a href="#Arduino接收信息并输出" class="headerlink" title="Arduino接收信息并输出"></a>Arduino接收信息并输出</h1><h2 id="Arduino接收串口信息"><a href="#Arduino接收串口信息" class="headerlink" title="Arduino接收串口信息"></a>Arduino接收串口信息</h2><p>实际上Arduino通过软串口连接8266的示例在<a href="#Arduino与8266的串口通信">上边</a>以及提供了，但我还是提供一下<a href="#代码示例">我的实现方式</a>。</p>
+<h2 id="Arduino处理数据并控制动作模块"><a href="#Arduino处理数据并控制动作模块" class="headerlink" title="Arduino处理数据并控制动作模块"></a>Arduino处理数据并控制动作模块</h2><h4 id="Arduino-舵机"><a href="#Arduino-舵机" class="headerlink" title="Arduino+舵机"></a>Arduino+舵机</h4><p>舵机图如下，能通过pin口接收一个角度值然后将旋桨旋转到该角度。<a target="_blank" rel="noopener" href="https://arduino.nxez.com/2016/12/20/use-arduino-to-control-the-steering-gear.html">舵机细节讲解</a><br><img src="/2021/02/14/Arduino/Servo.png" alt="舵机"><br>控制代码如下<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;Servo.h&gt;		// 头文件</span></span></span><br><span class="line">Servo myServo;</span><br><span class="line">pinMode(<span class="keyword">int</span> pin, myServo);	<span class="comment">// 和控制led灯类似，需传入对应的pin口号</span></span><br><span class="line">myServo.write(<span class="keyword">int</span> angle);		<span class="comment">// 写入角度值，进行旋转</span></span><br></pre></td></tr></table></figure></p>
+<h4 id="Arduino处理串口数据"><a href="#Arduino处理串口数据" class="headerlink" title="Arduino处理串口数据"></a>Arduino处理串口数据</h4><p>说实话通过串口接受的数据处理也是废了不少脑筋。<br>经过测试，通过SoftwareSerial.read()读取的数据实际上是byte的字节流，需要强转为char类型，组装为原文字符串；而Serial.print()方法打印的数据，稍有不慎会出现乱序和重复的问题。然而这些问题都还没有结论，我也暂时没有深究。</p>
+<p>由于在8266中输出的字符串文本接受时都是零散的字符，因此我输出文本时，将每一段文本都加上<code>#</code>开头，在Arduino接收时以一个<code>#</code>以及一个结尾的<code>\n</code>作为一句文本的标志，以此获得完整的字符串。<br>然而如果是要接受一段mqtt协议相关的消息，那么一段消息我需要得到的最主要信息就是<code>topic</code>和<code>message</code>至少两个部分。因此我决定让8266输出的信息拼装为一个json串，然后Arduino上以json的方式取用数据。</p>
+<p><a href="#舵机">最后实现代码</a></p>
+<div class="note primary">
+            <p>实际上这个地方大可不必如此麻烦，直接让8266发送角度值，Arduino接受后送给舵机发动就好了，没必要整花里胡哨的。但我是考虑了如果Arduino上如果连接了多个外设，那就需要区分topic和消息内容了，索性折腾了一下</p>
+          </div>
+<div class="note info">
+            <p><strong>Arduino上的Json库：ArduinoJson</strong><br>同样的库管理中下载该库。由于网上大部分都是v5版本，为此还在其官网徜徉了一番，找到<a target="_blank" rel="noopener" href="https://arduinojson.org/v6/doc/upgrade/">版本变更点</a>，以及<a target="_blank" rel="noopener" href="https://arduinojson.org/v6/example/parser/">v6正确打开方式</a>。<br>十分详尽，此处不过多介绍使用了</p>
+          </div>
+<h1 id="代码示例"><a href="#代码示例" class="headerlink" title="代码示例"></a>代码示例</h1><h2 id="实现esp8266wifi连接且通过软串口输出到ardunio"><a href="#实现esp8266wifi连接且通过软串口输出到ardunio" class="headerlink" title="实现esp8266wifi连接且通过软串口输出到ardunio"></a>实现esp8266wifi连接且通过软串口输出到ardunio</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ESP8266代码</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;ESP8266WiFi.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> <span class="keyword">char</span>* ssid = <span class="string">&quot;ssid&quot;</span>;</span><br><span class="line"><span class="keyword">const</span> <span class="keyword">char</span>* pwd = <span class="string">&quot;password&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">setup</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  Serial.begin(<span class="number">9600</span>);</span><br><span class="line"></span><br><span class="line">  Serial.println(<span class="string">&quot;Connecting to &quot;</span>);</span><br><span class="line">  WiFi.begin(ssid, pwd);</span><br><span class="line">  <span class="keyword">while</span>(WiFi.status() != WL_CONNECTED) &#123;</span><br><span class="line">    delay(<span class="number">500</span>);</span><br><span class="line">    Serial.print(<span class="string">&quot;.&quot;</span>);</span><br><span class="line">  &#125;</span><br><span class="line">  Serial.println(<span class="string">&quot;&quot;</span>);</span><br><span class="line">  Serial.println(<span class="string">&quot;Wifi connected&quot;</span>);</span><br><span class="line">  Serial.println(<span class="string">&quot;IP address: &quot;</span>);</span><br><span class="line">  Serial.println(WiFi.localIP());</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Ardunio代码</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;SoftwareSerial.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function">SoftwareSerial <span class="title">mySerial</span><span class="params">(<span class="number">10</span>, <span class="number">11</span>)</span></span>; <span class="comment">// TX,RX</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">setup</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  Serial.begin(<span class="number">9600</span>);</span><br><span class="line">  <span class="keyword">while</span> (!Serial) &#123;&#125;</span><br><span class="line">  Serial.println(<span class="string">&quot;Goodnight moon!&quot;</span>);</span><br><span class="line">  </span><br><span class="line">  delay(<span class="number">300</span>);</span><br><span class="line">  mySerial.begin(<span class="number">9600</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">loop</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (mySerial.available()) &#123;</span><br><span class="line">    Serial.write(mySerial.read());</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">if</span> (Serial.available()) &#123;</span><br><span class="line">    mySerial.write(Serial.read());</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="/2021/02/14/Arduino/first.png" alt="首次成功"></p>
+<p><strong>值得注意的是，一直以来很多论坛说的Ardunio和ESP8266的RX和TX需要反着接，但是尝试之后好像不是这样的。并且成功的最后一步操作是，把两条反接的线再反过来一次，即TX对TX，RX对RX。这里不是很明白，望交流告知</strong>。因此如果没有反应，可以尝试把RX和TX反过来试试。</p>
+<h2 id="舵机"><a href="#舵机" class="headerlink" title="舵机"></a>舵机</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ESP8266端代码</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;ESP8266WiFi.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;PubSubClient.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> <span class="keyword">char</span>* ssid = <span class="string">&quot;ssid&quot;</span>;</span><br><span class="line"><span class="keyword">const</span> <span class="keyword">char</span>* pwd = <span class="string">&quot;pwd&quot;</span>;</span><br><span class="line"><span class="keyword">const</span> <span class="keyword">char</span>* mqtt_server = <span class="string">&quot;192.168.1.103&quot;</span>;</span><br><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> mqtt_port = <span class="number">1883</span>;</span><br><span class="line"></span><br><span class="line">WiFiClient espClient;</span><br><span class="line"><span class="function">PubSubClient <span class="title">client</span><span class="params">(espClient)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">connectWifi</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  WiFi.begin(ssid, pwd);</span><br><span class="line">  <span class="keyword">while</span> (WiFi.status() != WL_CONNECTED) &#123;</span><br><span class="line">    delay(<span class="number">500</span>);</span><br><span class="line">    Serial.print(<span class="string">&quot;.&quot;</span>);</span><br><span class="line">  &#125;</span><br><span class="line">  Serial.println(<span class="string">&quot;&quot;</span>);</span><br><span class="line">  Serial.println(<span class="string">&quot;Wifi connected&quot;</span>);</span><br><span class="line"></span><br><span class="line">  Serial.println(<span class="string">&quot;IP address: &quot;</span>);</span><br><span class="line">  Serial.println(WiFi.localIP());</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">reConnectMqtt</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  <span class="keyword">while</span> (!client.connected()) &#123;</span><br><span class="line">    String client_id = <span class="string">&quot;esp8266-client-&quot;</span>;</span><br><span class="line">    client_id += String(WiFi.macAddress());</span><br><span class="line">    Serial.println(<span class="string">&quot;Connecting to public emqx mqtt broker.....&quot;</span>);</span><br><span class="line">    <span class="keyword">if</span> (client.connect(client_id.c_str())) &#123;</span><br><span class="line">      Serial.println(<span class="string">&quot;Public emqx mqtt broker connected&quot;</span>);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      Serial.print(<span class="string">&quot;failed with state &quot;</span>);</span><br><span class="line">      Serial.print(client.state());</span><br><span class="line">      delay(<span class="number">2000</span>);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  Serial.println(<span class="string">&quot;start to subsc&quot;</span>);</span><br><span class="line">  <span class="keyword">char</span>* topic = <span class="string">&quot;hello&quot;</span>;</span><br><span class="line">  client.publish(topic, <span class="string">&quot;hello emqx&quot;</span>);</span><br><span class="line">  client.subscribe(topic);</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">setup</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  Serial.begin(<span class="number">9600</span>);</span><br><span class="line">  Serial.println(<span class="string">&quot;Connecting to &quot;</span>);</span><br><span class="line"></span><br><span class="line">  connectWifi();</span><br><span class="line"></span><br><span class="line">  client.setServer(mqtt_server, mqtt_port);</span><br><span class="line">  client.setCallback(callback);</span><br><span class="line">  reConnectMqtt();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">callback</span><span class="params">(<span class="keyword">char</span> *topic, byte * payload, <span class="keyword">unsigned</span> <span class="keyword">int</span> length)</span> </span>&#123;</span><br><span class="line">  String content = <span class="string">&quot;#&#123;\&quot;topic\&quot;:\&quot;&quot;</span> + String(topic) + <span class="string">&quot;\&quot;, \&quot;msg\&quot;:\&quot;&quot;</span>;</span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; length; i++) &#123;</span><br><span class="line">    content += (<span class="keyword">char</span>) payload[i];</span><br><span class="line">  &#125;</span><br><span class="line">  content += <span class="string">&quot;\&quot;, \&quot;other\&quot;:213&#125;&quot;</span>;</span><br><span class="line">  Serial.println(content);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">loop</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (!client.connected()) &#123;</span><br><span class="line">    Serial.println(<span class="string">&quot;Reconnenct&quot;</span>);</span><br><span class="line">		reConnectMqtt();</span><br><span class="line">  &#125;</span><br><span class="line">  client.loop();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// ============================</span></span><br><span class="line"><span class="comment">// Arduino端代码</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;SoftwareSerial.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;ArduinoJson.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;Servo.h&gt;</span></span></span><br><span class="line"></span><br><span class="line">Servo myServo;</span><br><span class="line"><span class="keyword">int</span> ServoPin = <span class="number">8</span>;</span><br><span class="line"></span><br><span class="line"><span class="function">SoftwareSerial <span class="title">mySerial</span><span class="params">(<span class="number">10</span>, <span class="number">11</span>)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">setup</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  Serial.begin(<span class="number">9600</span>);</span><br><span class="line">  pinMode(ServoPin, OUTPUT);</span><br><span class="line">  myServo.attach(ServoPin);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">while</span> (!Serial) &#123;&#125;</span><br><span class="line">  Serial.println(<span class="string">&quot;Goodnight moon!&quot;</span>);</span><br><span class="line"></span><br><span class="line">  delay(<span class="number">300</span>);</span><br><span class="line">  mySerial.begin(<span class="number">9600</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">String con = <span class="string">&quot;&quot;</span>;</span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * 0：未记录</span></span><br><span class="line"><span class="comment"> * 1：记录日志</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">int</span> note = <span class="number">0</span>;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">handler</span><span class="params">(String)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">loop</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (mySerial.available()) &#123;</span><br><span class="line">    <span class="keyword">char</span> a = mySerial.read();</span><br><span class="line">    <span class="keyword">if</span> (a == <span class="string">&#x27;\n&#x27;</span> &amp;&amp; note == <span class="number">1</span>) &#123;</span><br><span class="line">      <span class="comment">// 记录中且读到/n：关闭记录且输出，并清空缓存；</span></span><br><span class="line">      note = <span class="number">0</span>;</span><br><span class="line">      handler(con);</span><br><span class="line">      con = <span class="string">&quot;&quot;</span>;</span><br><span class="line">      <span class="keyword">return</span> ;</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (a == <span class="string">&#x27;#&#x27;</span> &amp;&amp; note == <span class="number">1</span>) &#123;</span><br><span class="line">      <span class="comment">// 记录中又读到一个#：输出当前，清空缓存</span></span><br><span class="line">      handler(con);</span><br><span class="line">      con = <span class="string">&quot;&quot;</span>;</span><br><span class="line">      <span class="keyword">return</span> ;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (a == <span class="string">&#x27;#&#x27;</span>) &#123;</span><br><span class="line">      note = <span class="number">1</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (note == <span class="number">1</span>) &#123;</span><br><span class="line">      con += a;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">StaticJsonDocument&lt;<span class="number">200</span>&gt; doc;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">handler</span><span class="params">(String str)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">char</span>* con = str.c_str();</span><br><span class="line">  <span class="keyword">auto</span> error = deserializeJson(doc, con);</span><br><span class="line">  Serial.println(str);</span><br><span class="line">  <span class="keyword">if</span> (error) &#123;</span><br><span class="line">    Serial.println(<span class="string">&quot;parseJson Fail&quot;</span>);</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">char</span>* topic = doc[<span class="string">&quot;topic&quot;</span>];</span><br><span class="line">  <span class="keyword">char</span>* msg = doc[<span class="string">&quot;msg&quot;</span>];</span><br><span class="line">  <span class="keyword">int</span> other = doc[<span class="string">&quot;other&quot;</span>];</span><br><span class="line">  Serial.println(<span class="string">&quot;**&quot;</span> + String(topic) + <span class="string">&quot;**&quot;</span>);</span><br><span class="line">  Serial.println(<span class="string">&quot;**&quot;</span> + String(msg) + <span class="string">&quot;**&quot;</span>);</span><br><span class="line">  Serial.println(<span class="string">&quot;**&quot;</span> + String(other) + <span class="string">&quot;**&quot;</span>);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (String(topic) == <span class="string">&quot;hello&quot;</span>) &#123;</span><br><span class="line">    <span class="keyword">int</span> te = atoi(msg);</span><br><span class="line">    <span class="comment">// Serial.println(&quot;Servo Angle &quot; + te);		// 若是打开这句输出，串口输出就会乱掉，不解</span></span><br><span class="line">    myServo.write(te);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="/2021/02/14/Arduino/end.png" alt="实物图"></p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>本次折腾了快一周，算是很有收获，搞清楚了之前一直云里雾里的8266编程和他的AT指令以及串口通信的使用。</p>
+<p><strong>ESP8266和Arduino就像是两个的单片机，如果需要做AT指令不好完成的操作，当然需要另外编写代码烧录到8266中。而如果只是连接Wifi还是可以通过AT指令完成的，甚至进行MQTT通信，也可以使用对应的AT固件完成。</strong></p>
+<p>实际上在各种查阅时候，确实看到某大佬自己编写的支持8266进行mqtt通信的指令固件，参见<a target="_blank" rel="noopener" href="http://wenzheng.club/2019/02/14/index/">他的站点</a>。对于这种大佬也是只有崇拜啦</p>
+
+    </div>
+
+    
+    
+    
+
+    <div style=" width:100%; text-align:center; margin-left:15px; margin-right:15px;">
+	<hr style="width:30%;vertical-align:middle; display:inline-block;"/>  
+	    完结 
+	    <i class="fa fa-paw"></i> 
+	     撒花 ฅ&gt;ω&lt;*ฅ  
+	<hr style="width:30%;vertical-align:middle; display:inline-block;"/>
+    </div>
+
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>minions
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://codeminions.github.io/2021/02/14/Arduino/" title="Arduino+Esp8266实现远程的模块控制">http://codeminions.github.io/2021/02/14/Arduino/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          
+          <div class="post-tags">
+              <a href="/tags/%E6%8A%80%E8%83%BD%E5%B8%96/" rel="tag"><i class="fa fa-tag"></i> 技能帖</a>
+              <a href="/tags/MQTT/" rel="tag"><i class="fa fa-tag"></i> MQTT</a>
+              <a href="/tags/Arduino/" rel="tag"><i class="fa fa-tag"></i> Arduino</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/02/12/hello-world/" rel="prev" title="Hello World">
+      <i class="fa fa-chevron-left"></i> Hello World
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/02/25/mqtt/" rel="next" title="初识MQTT">
+      初识MQTT <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E7%A1%AC%E4%BB%B6%E4%BF%A1%E6%81%AF"><span class="nav-number">1.</span> <span class="nav-text">使用硬件信息</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B3%E4%BA%8EESP8266"><span class="nav-number">1.1.</span> <span class="nav-text">关于ESP8266</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Arduino%E4%B8%8E8266%E7%9A%84%E4%B8%B2%E5%8F%A3%E9%80%9A%E4%BF%A1"><span class="nav-number">2.</span> <span class="nav-text">Arduino与8266的串口通信</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#ESP8266AT%E6%8C%87%E4%BB%A4%E4%B8%8D%E5%8F%AF%E7%94%A8"><span class="nav-number">2.1.</span> <span class="nav-text">ESP8266AT指令不可用</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#ESP8266%E8%BF%9E%E6%8E%A5wifi%E4%B8%8EMQTT%E6%9C%8D%E5%8A%A1%E5%99%A8"><span class="nav-number">3.</span> <span class="nav-text">ESP8266连接wifi与MQTT服务器</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#ESP8266%E4%BB%A3%E7%A0%81%E7%83%A7%E5%BD%95"><span class="nav-number">3.1.</span> <span class="nav-text">ESP8266代码烧录</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ESP8266%E4%BB%A3%E7%A0%81%E7%BC%96%E5%86%99"><span class="nav-number">3.1.1.</span> <span class="nav-text">ESP8266代码编写</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Esp8266%E4%BB%A3%E7%A0%81%E7%83%A7%E5%BD%95"><span class="nav-number">3.1.2.</span> <span class="nav-text">Esp8266代码烧录</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ESP8266%E4%BB%A3%E7%A0%81%E7%BC%96%E5%86%99-1"><span class="nav-number">3.2.</span> <span class="nav-text">ESP8266代码编写</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ESP8266%E4%B8%B2%E5%8F%A3%E9%80%9A%E4%BF%A1"><span class="nav-number">3.2.1.</span> <span class="nav-text">ESP8266串口通信</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ESP8266%E8%BF%9E%E6%8E%A5Wifi"><span class="nav-number">3.2.2.</span> <span class="nav-text">ESP8266连接Wifi</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ESP8266%E4%B8%8EMQTT%E5%8D%8F%E8%AE%AE"><span class="nav-number">3.2.3.</span> <span class="nav-text">ESP8266与MQTT协议</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B3%E4%BA%8EMQTT"><span class="nav-number">3.3.</span> <span class="nav-text">关于MQTT</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Arduino%E6%8E%A5%E6%94%B6%E4%BF%A1%E6%81%AF%E5%B9%B6%E8%BE%93%E5%87%BA"><span class="nav-number">4.</span> <span class="nav-text">Arduino接收信息并输出</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Arduino%E6%8E%A5%E6%94%B6%E4%B8%B2%E5%8F%A3%E4%BF%A1%E6%81%AF"><span class="nav-number">4.1.</span> <span class="nav-text">Arduino接收串口信息</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Arduino%E5%A4%84%E7%90%86%E6%95%B0%E6%8D%AE%E5%B9%B6%E6%8E%A7%E5%88%B6%E5%8A%A8%E4%BD%9C%E6%A8%A1%E5%9D%97"><span class="nav-number">4.2.</span> <span class="nav-text">Arduino处理数据并控制动作模块</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Arduino-%E8%88%B5%E6%9C%BA"><span class="nav-number">4.2.0.1.</span> <span class="nav-text">Arduino+舵机</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Arduino%E5%A4%84%E7%90%86%E4%B8%B2%E5%8F%A3%E6%95%B0%E6%8D%AE"><span class="nav-number">4.2.0.2.</span> <span class="nav-text">Arduino处理串口数据</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E7%A4%BA%E4%BE%8B"><span class="nav-number">5.</span> <span class="nav-text">代码示例</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0esp8266wifi%E8%BF%9E%E6%8E%A5%E4%B8%94%E9%80%9A%E8%BF%87%E8%BD%AF%E4%B8%B2%E5%8F%A3%E8%BE%93%E5%87%BA%E5%88%B0ardunio"><span class="nav-number">5.1.</span> <span class="nav-text">实现esp8266wifi连接且通过软串口输出到ardunio</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%88%B5%E6%9C%BA"><span class="nav-number">5.2.</span> <span class="nav-text">舵机</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">6.</span> <span class="nav-text">总结</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="minions"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">minions</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">36</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">16</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/CodeMinions" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;CodeMinions" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/atom.xml" title="rss → &#x2F;atom.xml"><i class="fa fa-rss fa-fw"></i>rss</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2018 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">minions</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> v4.2.0 & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.8.0 强力驱动
+  </div>
+  <div class="post-count> 
+    <span class="post-meta-item-icon">
+      <!-- <i class="fa fa-chart-area"></i> -->
+    </span>
+    <span title="post-meta-item-text">
+	博主minions已经码了
+	  168k
+	字辣  ~\(≧▽≦)/~
+    </span>
+    
+  </div>
+  <div class="busuanzi-count">
+    <span id="busuanzi_container_site_pv" style='display:none'>
+        ///▽///
+	本站已经被访问<span id="busuanzi_value_site_pv"></span>次	 	 
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: inline;">
+      <span class="post-meta-item-icon">
+        <!-- <i class="fa fa-user"></i> -->
+      </span>
+      <span class="site-uv" title="一共有">
+        <span id="busuanzi_value_site_uv"></span>人来过辣
+	♪( ´θ｀)ノ
+      </span>
+    </span>
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : true,
+      appId      : 'ksFXxiyOicesm1H1gQuK6RvU-MdYXbMMI',
+      appKey     : 'eswY6MY2MKFfOeYILl9HsUHo',
+      placeholder: "Just go go",
+      avatar     : 'retro',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      avatar_cdn:'https://www.gravatar.com/avatar/',
+      visitor    : false,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : '',
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

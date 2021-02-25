@@ -201,6 +201,275 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://codeminions.github.io/2018/11/10/Java%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="minions">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="初学者">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2018/11/10/Java%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/" class="post-title-link" itemprop="url">Java Socket使用</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2018-11-10 12:28:29 / 修改时间：00:00:00" itemprop="dateCreated datePublished" datetime="2018-11-10T12:28:29+08:00">2018-11-10</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Code/" itemprop="url" rel="index"><span itemprop="name">Code</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2018/11/10/Java%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2018/11/10/Java%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>4.2k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>4 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="JAVA-WEB网络编程"><a href="#JAVA-WEB网络编程" class="headerlink" title="JAVA WEB网络编程"></a>JAVA WEB网络编程</h2><h3 id="Socket套接字"><a href="#Socket套接字" class="headerlink" title="Socket套接字"></a>Socket套接字</h3><ul>
+<li>socket使用TCP实现计算机间的通信机制。client创建一个socket，并尝试连接服务器的socket。</li>
+<li><p>客户与服务端可以使用对Socket的读写来实现通信。</p>
+<p>ServerSocket类为服务器提供一种监听客户端并建立连接的机制。<br>具体实现：</p>
+<ol>
+<li>Server端实例化一个ServerSocket，表示通过服务器上的端口通信。</li>
+<li>ServerSocket.accept()方法将一直等待直到客户端连接上服务器的端口</li>
+<li>Client端实例化Socket，指定服务器地址与端口号请求连接。</li>
+<li>Socket的构造函数尝试连接。通信被建立后，则可通过Socket通信，否则抛出IOException</li>
+<li>Server端accept()返回一个scoket引用，该socket连接到Client的Socket
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2018/11/10/Java%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://codeminions.github.io/2018/11/01/Recycler%E5%B0%81%E8%A3%85/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="minions">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="初学者">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2018/11/01/Recycler%E5%B0%81%E8%A3%85/" class="post-title-link" itemprop="url">RecyclerView常用封装</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2018-11-01 08:00:00" itemprop="dateCreated datePublished" datetime="2018-11-01T08:00:00+08:00">2018-11-01</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2019-10-19 00:00:00" itemprop="dateModified" datetime="2019-10-19T00:00:00+08:00">2019-10-19</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Code/" itemprop="url" rel="index"><span itemprop="name">Code</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2018/11/01/Recycler%E5%B0%81%E8%A3%85/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2018/11/01/Recycler%E5%B0%81%E8%A3%85/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>6.5k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>6 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="RecyclerView常用的一种封装方式"><a href="#RecyclerView常用的一种封装方式" class="headerlink" title="RecyclerView常用的一种封装方式"></a>RecyclerView常用的一种封装方式</h1><p>本文介绍一种RecyclerView的常用封装形式，最后效果是调用时只需定义回调方法getItemViewType()与onCreateViewHolder(View, int)<br>因为在使用时一般会有特殊的item填充的需求，以及不同使用场景会使用不同的ViewHolder进行填充的需求。<br>先上代码…</p>
+<h2 id="具体代码"><a href="#具体代码" class="headerlink" title="具体代码"></a>具体代码</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br><span class="line">241</span><br><span class="line">242</span><br><span class="line">243</span><br><span class="line">244</span><br><span class="line">245</span><br><span class="line">246</span><br><span class="line">247</span><br><span class="line">248</span><br><span class="line">249</span><br><span class="line">250</span><br><span class="line">251</span><br><span class="line">252</span><br><span class="line">253</span><br><span class="line">254</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">RecyclerAdapter</span>&lt;<span class="title">T</span>&gt; <span class="keyword">extends</span> <span class="title">RecyclerView</span>.<span class="title">Adapter</span>&lt;<span class="title">RecyclerAdapter</span>.<span class="title">ViewHolder</span>&lt;<span class="title">T</span>&gt;&gt; <span class="keyword">implements</span> <span class="title">View</span>.<span class="title">OnClickListener</span>, <span class="title">AdapterCallBack</span>&lt;<span class="title">T</span>&gt; </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> List&lt;T&gt; list;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> AdapterListener&lt;T&gt; mListener;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 构造模块</span></span><br><span class="line"><span class="comment">     * ------------------------------------------------------------------</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> dataList</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> listener</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">RecyclerAdapter</span><span class="params">(List&lt;T&gt; dataList, AdapterListener&lt;T&gt; listener)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.mListener = listener;</span><br><span class="line">        <span class="keyword">this</span>.list = dataList;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">RecyclerAdapter</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>(<span class="keyword">null</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">RecyclerAdapter</span><span class="params">(AdapterListener&lt;T&gt; listener)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>(<span class="keyword">new</span> ArrayList&lt;T&gt;(), listener);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * ViewId获取模块</span></span><br><span class="line"><span class="comment">     * ------------------------------------------------------------------</span></span><br><span class="line"><span class="comment">     * 复写默认布局返回</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> position 坐标</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> 返回布局id</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getItemViewType</span><span class="params">(<span class="keyword">int</span> position)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> getItemViewType(position, list.get(position));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 获取布局类型(id)</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> position 坐标</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> data     当前数据</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> 布局id，用于创建ViewHolder</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">abstract</span> <span class="keyword">int</span> <span class="title">getItemViewType</span><span class="params">(<span class="keyword">int</span> position, T data)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * ViewHolder创建模块</span></span><br><span class="line"><span class="comment">     * ------------------------------------------------------------------</span></span><br><span class="line"><span class="comment">     * 创建一个ViewHolder</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> parent</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> viewType Item的类型，约定为XML的id（简化操作）</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> ViewHolder</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> ViewHolder&lt;T&gt; <span class="title">onCreateViewHolder</span><span class="params">(ViewGroup parent, <span class="keyword">int</span> viewType)</span> </span>&#123;</span><br><span class="line">        LayoutInflater inflater = LayoutInflater.from(parent.getContext());</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 将一个xml id为ViewType的文件初始化为一个root View</span></span><br><span class="line">        View root = inflater.inflate(viewType, parent, <span class="keyword">false</span>);</span><br><span class="line">        <span class="comment">// 通过子类必须实现的方法得到一个ViewHolder</span></span><br><span class="line">        ViewHolder&lt;T&gt; holder = onCreateViewHolder(root, viewType);</span><br><span class="line">        <span class="comment">// 对Holder的事件操作实际上是对view进行操作。对一个ViewHolder设置事件实际上还是对其根布局设置</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">//设置View的Tag为Holder进行双向绑定</span></span><br><span class="line">        root.setTag(R.id.tag_recycler_holder, holder);</span><br><span class="line">        <span class="comment">// 设置事件点击</span></span><br><span class="line">        root.setOnClickListener(<span class="keyword">this</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 进行界面注解绑定</span></span><br><span class="line">        holder.unBinder = ButterKnife.bind(holder, root);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 绑定callback</span></span><br><span class="line">        holder.callBack = <span class="keyword">this</span>;</span><br><span class="line">        <span class="keyword">return</span> holder;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 当得到一个新的ViewHolder</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> parent   根布局</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> viewType 布局类型，即xml的id</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> ViewHolder</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> ViewHolder&lt;T&gt; <span class="title">onCreateViewHolder</span><span class="params">(View parent, <span class="keyword">int</span> viewType)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Holder数据绑定模块</span></span><br><span class="line"><span class="comment">     * ------------------------------------------------------------------</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> holder</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> position</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onBindViewHolder</span><span class="params">(ViewHolder&lt;T&gt; holder, <span class="keyword">int</span> position)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 得到需要绑定的方法</span></span><br><span class="line">        T data = list.get(position);</span><br><span class="line">        <span class="comment">// 触发Holder的绑定方法</span></span><br><span class="line">        holder.bind(data);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getItemCount</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> list.size();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 操作数据列表模块</span></span><br><span class="line"><span class="comment">     * ------------------------------------------------------------------</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">add</span><span class="params">(T data)</span> </span>&#123;</span><br><span class="line">        list.add(data);</span><br><span class="line">        notifyItemInserted(list.size() - <span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 插入一堆数据并通知这段集合更新</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> datalist data</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">add</span><span class="params">(T... datalist)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (datalist != <span class="keyword">null</span> &amp;&amp; datalist.length &gt; <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="keyword">int</span> startPos = list.size();</span><br><span class="line">            Collections.addAll(list, datalist);</span><br><span class="line">            notifyItemRangeInserted(startPos, datalist.length);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 插入一堆数据并通知这段集合更新</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> datalist data</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">add</span><span class="params">(Collection&lt;T&gt; datalist)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (datalist != <span class="keyword">null</span> &amp;&amp; datalist.size() &gt; <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="keyword">int</span> startPos = list.size();</span><br><span class="line">            list.addAll(datalist);</span><br><span class="line">            notifyItemRangeInserted(startPos, datalist.size());</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 删除操作</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">clear</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        list.clear();</span><br><span class="line">        notifyDataSetChanged();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 替换为一个新的集合</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> dataList 新集合</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">replace</span><span class="params">(Collection&lt;T&gt; dataList)</span> </span>&#123;</span><br><span class="line">        list.clear();</span><br><span class="line">        <span class="keyword">if</span> (dataList == <span class="keyword">null</span> || dataList.size() == <span class="number">0</span>)</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        list.addAll(dataList);</span><br><span class="line">        <span class="comment">// 全部更新</span></span><br><span class="line">        notifyDataSetChanged();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 点击设置及监听模块</span></span><br><span class="line"><span class="comment">     * ------------------------------------------------------------------</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onClick</span><span class="params">(View v)</span> </span>&#123;</span><br><span class="line">        ViewHolder holder = (ViewHolder) v.getTag(R.id.tag_recycler_holder);</span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">this</span>.mListener != <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="comment">// 得到ViewHolder当前对应适配器中的坐标</span></span><br><span class="line">            <span class="keyword">int</span> pos = holder.getAdapterPosition();</span><br><span class="line">            <span class="comment">// 回调</span></span><br><span class="line">            <span class="keyword">this</span>.mListener.onItemClick(holder, list.get(pos));</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 设置适配器点击监听</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> adapterListener</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setListener</span><span class="params">(AdapterListener&lt;T&gt; adapterListener)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.mListener = adapterListener;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">AdapterListener</span>&lt;<span class="title">T</span>&gt; </span>&#123;</span><br><span class="line">        <span class="comment">// 当cell点击时触发</span></span><br><span class="line">        <span class="function"><span class="keyword">void</span> <span class="title">onItemClick</span><span class="params">(RecyclerAdapter.ViewHolder holder, T data)</span></span>;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">void</span> <span class="title">onItemLongClick</span><span class="params">(RecyclerAdapter.ViewHolder holder, T data)</span></span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 加上abstract使子类实现时至少实现其中一个方法</span></span><br><span class="line"><span class="comment">     * 抽象方法不需要子类实现所有抽象方法，而接口要求实现所有方法</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">AdapterListenerImpl</span>&lt;<span class="title">T</span>&gt; <span class="keyword">implements</span> <span class="title">AdapterListener</span>&lt;<span class="title">T</span>&gt; </span>&#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onItemClick</span><span class="params">(ViewHolder holder, T data)</span> </span>&#123;&#125;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onItemLongClick</span><span class="params">(ViewHolder holder, T data)</span> </span>&#123;&#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * ViewHolder的封装类</span></span><br><span class="line"><span class="comment">     * 使用时需继承该类并实现onBind()方法完成控件与数据的绑定</span></span><br><span class="line"><span class="comment">     * ------------------------------------------------------------------</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">ViewHolder</span>&lt;<span class="title">T</span>&gt; <span class="keyword">extends</span> <span class="title">RecyclerView</span>.<span class="title">ViewHolder</span> </span>&#123;</span><br><span class="line">        <span class="keyword">private</span> Unbinder unBinder;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">private</span> AdapterCallBack&lt;T&gt; callBack;</span><br><span class="line">        <span class="keyword">protected</span> T data;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="title">ViewHolder</span><span class="params">(View v)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">super</span>(v);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">/**</span></span><br><span class="line"><span class="comment">         * 用于绑定数据的触发</span></span><br><span class="line"><span class="comment">         * <span class="doctag">@param</span> data 数据</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        <span class="function"><span class="keyword">void</span> <span class="title">bind</span><span class="params">(T data)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">this</span>.data = data;</span><br><span class="line">            onBind(data);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">/**</span></span><br><span class="line"><span class="comment">         * 通知整个列表更新的消息</span></span><br><span class="line"><span class="comment">         * 通过ViewHolder反向调用此方法进行更新</span></span><br><span class="line"><span class="comment">         * Holder自己对自己对应的data进行更新的</span></span><br><span class="line"><span class="comment">         *</span></span><br><span class="line"><span class="comment">         * <span class="doctag">@param</span> data</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">updataData</span><span class="params">(T data)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">if</span> (<span class="keyword">this</span>.callBack != <span class="keyword">null</span>) &#123;</span><br><span class="line">                <span class="keyword">this</span>.callBack.updata(data, <span class="keyword">this</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">/**</span></span><br><span class="line"><span class="comment">         * 触发帮顶数据时的回调。必须复写</span></span><br><span class="line"><span class="comment">         * 界面刷新赋值</span></span><br><span class="line"><span class="comment">         * <span class="doctag">@param</span> data 绑定的数据</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        <span class="function"><span class="keyword">protected</span> <span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">onBind</span><span class="params">(T data)</span></span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>以上代码看着有点多，因此分为几个模块，分开理解就都很简单了。</p>
+<h2 id="代码分析"><a href="#代码分析" class="headerlink" title="代码分析"></a>代码分析</h2><p>其实注释已经写得很清楚了但还是具体分析一下。</p>
+<h4 id="构造模块"><a href="#构造模块" class="headerlink" title="构造模块"></a>构造模块</h4><ul>
+<li>传入AdapterListener监听器实例</li>
+</ul>
+<h4 id="ViewType模块"><a href="#ViewType模块" class="headerlink" title="ViewType模块"></a>ViewType模块</h4><ul>
+<li>getItemViewType() 复写默认布局返回，布局id用于创建ViewHolder，返回调用同名抽象方法（不同参）</li>
+</ul>
+<h4 id="创建ViewHolder模块"><a href="#创建ViewHolder模块" class="headerlink" title="创建ViewHolder模块"></a>创建ViewHolder模块</h4><ul>
+<li>onCreateViewHolder 创建一个ViewHolder<ul>
+<li>调用类内定义的同名抽象方法onCreateViewHolder()获取holder，参数为View而不是ViewGroup</li>
+<li>View与Holder进行双向绑定（两种实现方式）<ul>
+<li>view.setTag()实现（key为一个特定id）</li>
+<li>Butterknife.bind()实现，并将返回的UnBinder保存在Holder中备用</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h4 id="数据绑定模块"><a href="#数据绑定模块" class="headerlink" title="数据绑定模块"></a>数据绑定模块</h4><ul>
+<li>onBindViewHolder<ul>
+<li>触发 <strong>Holder.bind()</strong> 方法（有点会回调的意思）</li>
+</ul>
+</li>
+</ul>
+<h4 id="点击响应以及监听模块"><a href="#点击响应以及监听模块" class="headerlink" title="点击响应以及监听模块"></a>点击响应以及监听模块</h4><ul>
+<li>AdapterListener 点击监听接口<ul>
+<li>由onClick()方法回调接口方法</li>
+<li>增加一个接口实现类，就可以只实现接口中的其中一个方法，而不需要全部实现</li>
+</ul>
+</li>
+</ul>
+<h4 id="ViewHolder抽象类模块"><a href="#ViewHolder抽象类模块" class="headerlink" title="ViewHolder抽象类模块"></a>ViewHolder抽象类模块</h4><ul>
+<li>ViewHolder 内部类定义<ul>
+<li>以前的写法是在构造方法中绑定控件，但是这里是定义了一个bind(T)进行绑定<ul>
+<li>bind()中调用abstract onBind()方法</li>
+</ul>
+</li>
+<li>需要通知整个列表更新的消息，定义方法updataData()<ul>
+<li>updataData方法回调了AdapterCallBack（外部定义）。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h4 id="数据操作模块"><a href="#数据操作模块" class="headerlink" title="数据操作模块"></a>数据操作模块</h4><ul>
+<li>add() &amp; clear() &amp; replace() &amp; 以及必须实现的 getItemCount()<ul>
+<li>对数据源进行修改，注意刷新列表更新</li>
+</ul>
+</li>
+</ul>
+<hr>
+<p>对RecyclerView使用的一种常用封装，为了开发是能够便捷简明的调用而又不影响其复用。</p>
+<p>以上是对这种封装形式的学习理解和分析，理解有所偏差或其他看法欢迎大佬交流，共同进步～</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://codeminions.github.io/2018/09/13/ButterKnife%E9%85%8D%E7%BD%AE%E5%8F%8A%E4%BD%BF%E7%94%A8/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1040,241 +1309,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://codeminions.github.io/2018/05/21/Java%E4%B8%AD%E5%8F%AF%E5%8F%98%E9%95%BF%E5%8F%82%E6%95%B0/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.png">
-      <meta itemprop="name" content="minions">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="初学者">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2018/05/21/Java%E4%B8%AD%E5%8F%AF%E5%8F%98%E9%95%BF%E5%8F%82%E6%95%B0/" class="post-title-link" itemprop="url">Java可变参数</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2018-05-21 13:04:28" itemprop="dateCreated datePublished" datetime="2018-05-21T13:04:28+08:00">2018-05-21</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2019-03-21 00:00:00" itemprop="dateModified" datetime="2019-03-21T00:00:00+08:00">2019-03-21</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Code/" itemprop="url" rel="index"><span itemprop="name">Code</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2018/05/21/Java%E4%B8%AD%E5%8F%AF%E5%8F%98%E9%95%BF%E5%8F%82%E6%95%B0/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2018/05/21/Java%E4%B8%AD%E5%8F%AF%E5%8F%98%E9%95%BF%E5%8F%82%E6%95%B0/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>2k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>2 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="Java可变参数"><a href="#Java可变参数" class="headerlink" title="Java可变参数"></a>Java可变参数</h1><p>在java方法定义是可以使用个数不确定的参数，对于同一个方法可以用不同个数的参数调用。</p>
-<h3 id="1-定义方法"><a href="#1-定义方法" class="headerlink" title="1. 定义方法"></a>1. 定义方法</h3><p><strong>…表示可变参数</strong><br>在有可变参数的方法中可以把参数当做数组使用。<br>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2018/05/21/Java%E4%B8%AD%E5%8F%AF%E5%8F%98%E9%95%BF%E5%8F%82%E6%95%B0/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://codeminions.github.io/2018/05/19/Java%E5%88%9D%E5%A7%8B%E5%8C%96%E4%BB%A3%E7%A0%81%E5%9D%97/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.png">
-      <meta itemprop="name" content="minions">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="初学者">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2018/05/19/Java%E5%88%9D%E5%A7%8B%E5%8C%96%E4%BB%A3%E7%A0%81%E5%9D%97/" class="post-title-link" itemprop="url">JAVA类定义之初始代码块</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2018-05-19 15:54:43" itemprop="dateCreated datePublished" datetime="2018-05-19T15:54:43+08:00">2018-05-19</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2018-06-17 00:00:00" itemprop="dateModified" datetime="2018-06-17T00:00:00+08:00">2018-06-17</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Code/" itemprop="url" rel="index"><span itemprop="name">Code</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2018/05/19/Java%E5%88%9D%E5%A7%8B%E5%8C%96%E4%BB%A3%E7%A0%81%E5%9D%97/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2018/05/19/Java%E5%88%9D%E5%A7%8B%E5%8C%96%E4%BB%A3%E7%A0%81%E5%9D%97/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>1.2k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>  今天学长出了一道题，我发现我竟然对初始化代码块的存在一无所知。<br>初始化代码块（initialization block）是初始化数据域的第三种机制（前两种分别是构造器和声明时赋值）。只要构造类的对象，只写代码块就会被自动执行，不需要调用。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">A</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line"><span class="comment">//数据域</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> id;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> name;</span><br><span class="line"><span class="comment">//object initilization block</span></span><br><span class="line">    &#123;</span><br><span class="line">         id = <span class="number">4</span>;</span><br><span class="line">         name++;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><br>构造类时，先运行初始化代码块，再运行构造方法的主体。<br>注：<br>为了避免循环定义，不要读取初始化以后的域<br>Java是按照编程顺序来执行实例变量初始化器和实例初始化器中的代码的，并且不允许顺序靠前的实例代码块初始化在其后面定义的实例变量<br>对静态域进行初始化，可直接提供一个初始化值（private ststic int id = 1;），也可通过静态的初始化块进行初始化。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span>&#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><br>再类第一次加载时，即进行静态域的初始化。且所有的静态初始化语句与静态初始化块都将按类的定义顺序执行。<br>注：<br>JVM加载类时执行（仅执行一次）</p>
-<ol>
-<li>随类的加载执行，只执行一次，并优先于主函数main。</li>
-<li>静态代码初始化块是给类初始化，构造代码块是给对象初始化。</li>
-<li>静态代码块中的变量是局部变量，等同于普通函数中的局部变量。</li>
-<li>一个类中可以有多个静态代码块。</li>
-</ol>
-<p>当涉及到继承时，按照如下顺序执行：<br>执行父类的静态代码块，初始化父类静态成员变量<br>执行子类的静态代码块，初始化子类静态成员变量<br>执行父类的构造代码块，执行父类的构造函数，初始化父类普通成员变量<br>执行子类的构造代码块，执行子类的构造函数，初始化子类普通成员变量</p>
-<p><img src="/2018/05/19/Java%E5%88%9D%E5%A7%8B%E5%8C%96%E4%BB%A3%E7%A0%81%E5%9D%97/Java初始化顺序.png" alt="hexo image"></p>
-<p>I.<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a;</span><br><span class="line">&#123;</span><br><span class="line">	b = a;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">int</span> b;</span><br></pre></td></tr></table></figure><br>II.<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> b; </span><br><span class="line">&#123; </span><br><span class="line">    b = a; </span><br><span class="line">&#125; </span><br><span class="line"><span class="keyword">int</span> a;</span><br></pre></td></tr></table></figure><br>I能够通过编译，但II报错：非法前引用。</p>
-<blockquote>
-<p>静态代码块只能对其之前的数据进行访问，对于其之后的数据可以赋值但不能被访问。<br>—《深入理解Java虚拟机》</p>
-</blockquote>
-<p>总结：<br>调用构造器的具体处理步骤：</p>
-<ol>
-<li>所有数据域被初始化为默认值（0，false，null）</li>
-<li>按类声明的顺序执行 与初始化语句和初始化</li>
-<li>若构造器首行调用了第二个构造器，则执行第二个构造器主体</li>
-<li>执行构造器</li>
-</ol>
-<p>一个Java对象的创建过程往往包括类初始化和类实例化两个阶段，类实例化包括实例变量初始化、实例代码块初始化以及构造函数初始化</p>
-<p>实际上，如果我们对实例变量直接赋值或者使用实例代码块赋值，那么编译器会将其中的代码放到类的构造函数中去，并且这些代码会被放在对超类构造函数的调用语句之后，构造函数本身的代码之前</p>
-<p>实例化对象时，JVM首先会检查相关类型是否已经加载并初始化，如果没有，则JVM立即进行加载并调用类构造器完成类的初始化。在类初始化过程中或初始化完毕后，根据具体情况才会去对类进行实例化。</p>
-<p>其实一般也很少使用到初始化块，因为都是在构造方法内完成类的初始化。初始化块一般适用于加载类时加载本地库。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1346,7 +1380,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">34</span>
+          <span class="site-state-item-count">36</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -1359,7 +1393,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-count">16</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -1408,7 +1442,7 @@
     </span>
     <span title="post-meta-item-text">
 	博主minions已经码了
-	  151k
+	  168k
 	字辣  ~\(≧▽≦)/~
     </span>
     
