@@ -29,8 +29,9 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://codeminions.github.io/2021/02/25/mqtt/emqx-mqtt.png">
 <meta property="og:image" content="http://codeminions.github.io/2021/02/25/mqtt/runoob-mqtt.png">
+<meta property="og:image" content="http://codeminions.github.io/2021/02/25/mqtt/Vmsk2q.png">
 <meta property="article:published_time" content="2021-02-25T09:53:32.000Z">
-<meta property="article:modified_time" content="2021-02-25T15:37:52.951Z">
+<meta property="article:modified_time" content="2021-05-08T08:23:34.875Z">
 <meta property="article:author" content="minions">
 <meta property="article:tag" content="Network">
 <meta property="article:tag" content="秘籍帖">
@@ -234,10 +235,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2021-02-25 17:53:32 / 修改时间：23:37:52" itemprop="dateCreated datePublished" datetime="2021-02-25T17:53:32+08:00">2021-02-25</time>
+              <time title="创建时间：2021-02-25 17:53:32" itemprop="dateCreated datePublished" datetime="2021-02-25T17:53:32+08:00">2021-02-25</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-05-08 16:23:34" itemprop="dateModified" datetime="2021-05-08T16:23:34+08:00">2021-05-08</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -275,7 +282,7 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>3.4k</span>
+              <span>3.5k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -332,11 +339,12 @@
 </blockquote>
 <p><a target="_blank" rel="noopener" href="https://www.runoob.com/w3cnote/mqtt-intro.html"><img src="/2021/02/25/mqtt/runoob-mqtt.png" alt="mqtt"></a><br>这是MQTT在实际应用中的<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/110063556">一个例子</a>，可以从架构层面感受一下MQTT协议在实际应用中的位置。</p>
 <h1 id="MQTT服务器"><a href="#MQTT服务器" class="headerlink" title="MQTT服务器"></a>MQTT服务器</h1><p>之后我打算通过实际的使用协议进行通信，实践中更好的体会一下。<br>Arduino社区有一位大佬写了<a target="_blank" rel="noopener" href="https://www.arduino.cn/thread-82851-1-1.html">一篇帖子</a>，讲了一下从TCP到MQTT的连接以及关于Esp8266的编程。</p>
-<h2 id="MQTT-nodejs实现broker"><a href="#MQTT-nodejs实现broker" class="headerlink" title="MQTT nodejs实现broker"></a>MQTT nodejs实现broker</h2><p>使用依赖：mosca mqtt<br>mosca相当于是nodejs下一个已实现的Mqtt Server实现。<a target="_blank" rel="noopener" href="https://www.jianshu.com/p/8315acec4e6b">介绍</a></p>
+<h2 id="MQTT-nodejs实现broker"><a href="#MQTT-nodejs实现broker" class="headerlink" title="MQTT nodejs实现broker"></a>MQTT nodejs实现broker</h2><p>使用依赖：mosca mqtt<br><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/8315acec4e6b"><img src="/2021/02/25/mqtt/Vmsk2q.png" alt="mosca"></a></p>
 <blockquote>
 <p><a target="_blank" rel="noopener" href="https://link.jianshu.com?t=https://github.com/mcollina/mosca">Mosca</a>是MQTT在Node.js中的一个Broker的开源实现，通俗讲也就是MQTT中的Server实现。<br> 同时作者也维护着<a target="_blank" rel="noopener" href="https://link.jianshu.com?t=https://github.com/mqttjs/MQTT.js">MQTT.js</a>这一模块，这一模块大家可理解为MQTT的Client实现。而纵观整个Node.js的module中比较有分量的也就以上两个module.</p>
 </blockquote>
-<p>首先通过<code>new mosca.Server(&#123;port: xx&#125;)</code>的方式创建一个MqttServer实例，其中以json的格式配置port信息。然后一个mqtt服务器算是建立起来了</p>
+<p>Mosca支持直接在命令行单独使用，<a target="_blank" rel="noopener" href="https://itbilu.com/nodejs/npm/Ny_j-wsve.html">详见</a></p>
+<p>当然也支持在node.js中进行调用。首先通过<code>new mosca.Server(&#123;port: xx&#125;)</code>的方式创建一个MqttServer实例，其中以json的格式配置port信息。然后一个mqtt服务器算是建立起来了</p>
 <p>然后可以进行事件监听。目前知道几个事件tag</p>
 <ul>
 <li>clientConnected    有客户端连接时回调，回调参数是client，大概是客户端的实例，可以通过<code>client.id</code>获取客户端id</li>
@@ -360,6 +368,7 @@
 <li>MQTT由于报文紧凑等原因可以在低带宽高延迟的网络环境进行稳定传输，适用于大多数物联网开发数据传输</li>
 <li>主要的通信模式是：存在一个MQTT服务器，连接到该服务端的终端通过消息订阅与推送机制收发消息</li>
 </ul>
+<h1 id="更新"><a href="#更新" class="headerlink" title="更新"></a>更新</h1><h2 id="2021-05-08-MQTT-Return-Code"><a href="#2021-05-08-MQTT-Return-Code" class="headerlink" title="2021-05-08    MQTT Return Code"></a>2021-05-08    MQTT Return Code</h2><p>MQTT连接异常时会返回错误信息，其中携带返回码。根据返回码可以了解异常原因，附上<a target="_blank" rel="noopener" href="https://www.vtscada.com/help/Content/D_Tags/D_MQTT_ErrMsg.htm">返回码文档</a><br><a target="_blank" rel="noopener" href="https://mcxiaoke.gitbooks.io/mqtt-cn/content/mqtt/0302-CONNACK.html">MQTT连接的请求报头信息</a></p>
 
     </div>
 
@@ -410,7 +419,10 @@
     <a href="/2021/02/14/Arduino/" rel="prev" title="Arduino+Esp8266实现远程的模块控制">
       <i class="fa fa-chevron-left"></i> Arduino+Esp8266实现远程的模块控制
     </a></div>
-      <div class="post-nav-item"></div>
+      <div class="post-nav-item">
+    <a href="/2021/03/24/Android-Jetpack%E5%88%9D%E8%AF%86/" rel="next" title="Android-Jetpack初识">
+      Android-Jetpack初识 <i class="fa fa-chevron-right"></i>
+    </a></div>
     </div>
       </footer>
     
@@ -470,7 +482,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%98%E6%96%B9%E6%96%87%E6%A1%A3"><span class="nav-number">1.</span> <span class="nav-text">官方文档</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#TCP%E4%B8%8EMQTT%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-number">2.</span> <span class="nav-text">TCP与MQTT的区别</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AE%BE%E8%AE%A1%E8%83%8C%E6%99%AF"><span class="nav-number">2.1.</span> <span class="nav-text">设计背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%8F%E8%AE%AE%E5%AE%9A%E4%BD%8D"><span class="nav-number">2.2.</span> <span class="nav-text">协议定位</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%B6%88%E6%81%AF%E6%9C%8D%E5%8A%A1%E7%AD%89%E7%BA%A7"><span class="nav-number">3.</span> <span class="nav-text">消息服务等级</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BC%BA%E7%82%B9"><span class="nav-number">4.</span> <span class="nav-text">缺点</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#MQTT%E6%9C%8D%E5%8A%A1%E5%99%A8"><span class="nav-number">5.</span> <span class="nav-text">MQTT服务器</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#MQTT-nodejs%E5%AE%9E%E7%8E%B0broker"><span class="nav-number">5.1.</span> <span class="nav-text">MQTT nodejs实现broker</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#EMQX%E5%9C%A8%E7%BA%BFmqtt%E5%B9%B3%E5%8F%B0"><span class="nav-number">5.2.</span> <span class="nav-text">EMQX在线mqtt平台</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">6.</span> <span class="nav-text">总结</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%98%E6%96%B9%E6%96%87%E6%A1%A3"><span class="nav-number">1.</span> <span class="nav-text">官方文档</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#TCP%E4%B8%8EMQTT%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-number">2.</span> <span class="nav-text">TCP与MQTT的区别</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AE%BE%E8%AE%A1%E8%83%8C%E6%99%AF"><span class="nav-number">2.1.</span> <span class="nav-text">设计背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%8F%E8%AE%AE%E5%AE%9A%E4%BD%8D"><span class="nav-number">2.2.</span> <span class="nav-text">协议定位</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%B6%88%E6%81%AF%E6%9C%8D%E5%8A%A1%E7%AD%89%E7%BA%A7"><span class="nav-number">3.</span> <span class="nav-text">消息服务等级</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BC%BA%E7%82%B9"><span class="nav-number">4.</span> <span class="nav-text">缺点</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#MQTT%E6%9C%8D%E5%8A%A1%E5%99%A8"><span class="nav-number">5.</span> <span class="nav-text">MQTT服务器</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#MQTT-nodejs%E5%AE%9E%E7%8E%B0broker"><span class="nav-number">5.1.</span> <span class="nav-text">MQTT nodejs实现broker</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#EMQX%E5%9C%A8%E7%BA%BFmqtt%E5%B9%B3%E5%8F%B0"><span class="nav-number">5.2.</span> <span class="nav-text">EMQX在线mqtt平台</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">6.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%9B%B4%E6%96%B0"><span class="nav-number">7.</span> <span class="nav-text">更新</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2021-05-08-MQTT-Return-Code"><span class="nav-number">7.1.</span> <span class="nav-text">2021-05-08    MQTT Return Code</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -486,7 +498,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">36</span>
+          <span class="site-state-item-count">38</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -499,7 +511,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">16</span>
+        <span class="site-state-item-count">19</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -548,7 +560,7 @@
     </span>
     <span title="post-meta-item-text">
 	博主minions已经码了
-	  168k
+	  181k
 	字辣  ~\(≧▽≦)/~
     </span>
     

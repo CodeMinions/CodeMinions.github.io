@@ -1233,11 +1233,12 @@ NavHelper定义逻辑：</li>
 </blockquote>
 <p><a href="https://www.runoob.com/w3cnote/mqtt-intro.html"><img src="/2021/02/25/mqtt/runoob-mqtt.png" alt="mqtt"></a><br>这是MQTT在实际应用中的<a href="https://zhuanlan.zhihu.com/p/110063556">一个例子</a>，可以从架构层面感受一下MQTT协议在实际应用中的位置。</p>
 <h1 id="MQTT服务器"><a href="#MQTT服务器" class="headerlink" title="MQTT服务器"></a>MQTT服务器</h1><p>之后我打算通过实际的使用协议进行通信，实践中更好的体会一下。<br>Arduino社区有一位大佬写了<a href="https://www.arduino.cn/thread-82851-1-1.html">一篇帖子</a>，讲了一下从TCP到MQTT的连接以及关于Esp8266的编程。</p>
-<h2 id="MQTT-nodejs实现broker"><a href="#MQTT-nodejs实现broker" class="headerlink" title="MQTT nodejs实现broker"></a>MQTT nodejs实现broker</h2><p>使用依赖：mosca mqtt<br>mosca相当于是nodejs下一个已实现的Mqtt Server实现。<a href="https://www.jianshu.com/p/8315acec4e6b">介绍</a></p>
+<h2 id="MQTT-nodejs实现broker"><a href="#MQTT-nodejs实现broker" class="headerlink" title="MQTT nodejs实现broker"></a>MQTT nodejs实现broker</h2><p>使用依赖：mosca mqtt<br><a href="https://www.jianshu.com/p/8315acec4e6b"><img src="/2021/02/25/mqtt/Vmsk2q.png" alt="mosca"></a></p>
 <blockquote>
 <p><a href="https://link.jianshu.com?t=https://github.com/mcollina/mosca">Mosca</a>是MQTT在Node.js中的一个Broker的开源实现，通俗讲也就是MQTT中的Server实现。<br> 同时作者也维护着<a href="https://link.jianshu.com?t=https://github.com/mqttjs/MQTT.js">MQTT.js</a>这一模块，这一模块大家可理解为MQTT的Client实现。而纵观整个Node.js的module中比较有分量的也就以上两个module.</p>
 </blockquote>
-<p>首先通过<code>new mosca.Server(&#123;port: xx&#125;)</code>的方式创建一个MqttServer实例，其中以json的格式配置port信息。然后一个mqtt服务器算是建立起来了</p>
+<p>Mosca支持直接在命令行单独使用，<a href="https://itbilu.com/nodejs/npm/Ny_j-wsve.html">详见</a></p>
+<p>当然也支持在node.js中进行调用。首先通过<code>new mosca.Server(&#123;port: xx&#125;)</code>的方式创建一个MqttServer实例，其中以json的格式配置port信息。然后一个mqtt服务器算是建立起来了</p>
 <p>然后可以进行事件监听。目前知道几个事件tag</p>
 <ul>
 <li>clientConnected    有客户端连接时回调，回调参数是client，大概是客户端的实例，可以通过<code>client.id</code>获取客户端id</li>
@@ -1261,6 +1262,7 @@ NavHelper定义逻辑：</li>
 <li>MQTT由于报文紧凑等原因可以在低带宽高延迟的网络环境进行稳定传输，适用于大多数物联网开发数据传输</li>
 <li>主要的通信模式是：存在一个MQTT服务器，连接到该服务端的终端通过消息订阅与推送机制收发消息</li>
 </ul>
+<h1 id="更新"><a href="#更新" class="headerlink" title="更新"></a>更新</h1><h2 id="2021-05-08-MQTT-Return-Code"><a href="#2021-05-08-MQTT-Return-Code" class="headerlink" title="2021-05-08    MQTT Return Code"></a>2021-05-08    MQTT Return Code</h2><p>MQTT连接异常时会返回错误信息，其中携带返回码。根据返回码可以了解异常原因，附上<a href="https://www.vtscada.com/help/Content/D_Tags/D_MQTT_ErrMsg.htm">返回码文档</a><br><a href="https://mcxiaoke.gitbooks.io/mqtt-cn/content/mqtt/0302-CONNACK.html">MQTT连接的请求报头信息</a></p>
 ]]></content>
       <categories>
         <category>Code</category>
@@ -1537,7 +1539,7 @@ NavHelper定义逻辑：</li>
 <li>Esp8266-01s</li>
 <li>动作模块使用舵机（或者灯泡等）</li>
 </ul>
-<h2 id="关于ESP8266"><a href="#关于ESP8266" class="headerlink" title="关于ESP8266"></a>关于ESP8266</h2><p>ESP8266存在3中工作模式：STA，AP，STA+AP<br>Sta模式: Station，类似于无线终端，本身不接受无线接入，可连接到AP，也就是可以连接wifi。一般无线网卡即工作在该模式<br>AP模式：相当于路由器，自己发射WiFi，终端可以连接上它，但是无法像sta模式那样连接其他WiFi。<br>STA+AP模式：既可以自己发射WiFi供其他终端连接，又可以做终端连接其他WiFi。这也是默认的出厂模式。 </p>
+<h2 id="关于ESP8266"><a href="#关于ESP8266" class="headerlink" title="关于ESP8266"></a>关于ESP8266</h2><p>ESP8266存在3种工作模式：STA，AP，STA+AP<br>Sta模式: Station，类似于无线终端，本身不接受无线接入，可连接到AP，也就是可以连接wifi。一般无线网卡即工作在该模式<br>AP模式：相当于路由器，自己发射WiFi，终端可以连接上它，但是无法像sta模式那样连接其他WiFi。<br>STA+AP模式：既可以自己发射WiFi供其他终端连接，又可以做终端连接其他WiFi。这也是默认的出厂模式。 </p>
 <p>ESP8266默认携带AT固件，支持AT指令，通过AT指令可以实现模式切换，修改波特率，Wifi连接，TCP连接等功能。<br>当然，使用不同的固件实现的功能也将不同。例如这里的<a href="http://www.piaoyi.org/iot/ESP8266-MQTT-AT-lewei50.html">支持mqtt的AT固件</a></p>
 <h1 id="Arduino与8266的串口通信"><a href="#Arduino与8266的串口通信" class="headerlink" title="Arduino与8266的串口通信"></a>Arduino与8266的串口通信</h1><p>ESP8266与Arduino的接线，软硬串口的通信可以参见<a href="https://www.jianshu.com/p/cde9f7072eab">这篇文章</a>。</p>
 <h2 id="ESP8266AT指令不可用"><a href="#ESP8266AT指令不可用" class="headerlink" title="ESP8266AT指令不可用"></a>ESP8266AT指令不可用</h2><p>Arduino接上8266之后，通过串口发送AT指令没有响应。于是尝试重刷esp8266的支持AT指令固件</p>
@@ -1583,7 +1585,10 @@ NavHelper定义逻辑：</li>
 <h2 id="关于MQTT"><a href="#关于MQTT" class="headerlink" title="关于MQTT"></a>关于MQTT</h2><p>对于MQTT，此前一直不了解，这几天查了些资料，根据自己的理解对MQTT进行了简单的介绍，大概是对TCP协议进一步封装的一个应用层协议，主要是消息订阅与发布广播的机制。可以看看<a href="../../../../2021/02/25/mqtt/">我对于MQTT的认识</a></p>
 <p>查阅过程中，看到Arduino社区一位大佬写下的<a href="https://www.arduino.cn/thread-82851-1-1.html">科普贴</a>，觉得对理解MQTT还是很有帮助。<br>以及如果有node.js的环境，也可以使用node.js搭建MQTT服务器和客户端，实现消息的发送订阅。使用<code>mosca</code>库3 5行就可以实现。</p>
 <h1 id="Arduino接收信息并输出"><a href="#Arduino接收信息并输出" class="headerlink" title="Arduino接收信息并输出"></a>Arduino接收信息并输出</h1><h2 id="Arduino接收串口信息"><a href="#Arduino接收串口信息" class="headerlink" title="Arduino接收串口信息"></a>Arduino接收串口信息</h2><p>实际上Arduino通过软串口连接8266的示例在<a href="#Arduino与8266的串口通信">上边</a>以及提供了，但我还是提供一下<a href="#代码示例">我的实现方式</a>。</p>
-<h2 id="Arduino处理数据并控制动作模块"><a href="#Arduino处理数据并控制动作模块" class="headerlink" title="Arduino处理数据并控制动作模块"></a>Arduino处理数据并控制动作模块</h2><h4 id="Arduino-舵机"><a href="#Arduino-舵机" class="headerlink" title="Arduino+舵机"></a>Arduino+舵机</h4><p>舵机图如下，能通过pin口接收一个角度值然后将旋桨旋转到该角度。<a href="https://arduino.nxez.com/2016/12/20/use-arduino-to-control-the-steering-gear.html">舵机细节讲解</a><br><img src="/2021/02/14/Arduino/Servo.png" alt="舵机"><br>控制代码如下<br><figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;Servo.h&gt;		// 头文件</span></span></span><br><span class="line">Servo myServo;</span><br><span class="line">pinMode(<span class="keyword">int</span> pin, myServo);	<span class="comment">// 和控制led灯类似，需传入对应的pin口号</span></span><br><span class="line">myServo.write(<span class="keyword">int</span> angle);		<span class="comment">// 写入角度值，进行旋转</span></span><br></pre></td></tr></table></figure></p>
+<h2 id="Arduino处理数据并控制动作模块"><a href="#Arduino处理数据并控制动作模块" class="headerlink" title="Arduino处理数据并控制动作模块"></a>Arduino处理数据并控制动作模块</h2><h4 id="Arduino-舵机"><a href="#Arduino-舵机" class="headerlink" title="Arduino+舵机"></a>Arduino+舵机</h4><p>舵机图如下，能通过pin口接收一个角度值然后将旋桨旋转到该角度。<a href="https://arduino.nxez.com/2016/12/20/use-arduino-to-control-the-steering-gear.html">舵机细节讲解</a></p>
+<p>接线方式<a href="https://steemit.com/utopian-io/@cha0s0000/arduino-sg90">参考</a></p>
+<p><img src="/2021/02/14/Arduino/Servo.png" alt="舵机"><br>控制代码如下</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;Servo.h&gt;		// 头文件</span></span></span><br><span class="line">Servo myServo;</span><br><span class="line">pinMode(<span class="keyword">int</span> pin, myServo);	<span class="comment">// 和控制led灯类似，需传入对应的pin口号</span></span><br><span class="line">myServo.write(<span class="keyword">int</span> angle);		<span class="comment">// 写入角度值，进行旋转</span></span><br></pre></td></tr></table></figure>
 <h4 id="Arduino处理串口数据"><a href="#Arduino处理串口数据" class="headerlink" title="Arduino处理串口数据"></a>Arduino处理串口数据</h4><p>说实话通过串口接受的数据处理也是废了不少脑筋。<br>经过测试，通过SoftwareSerial.read()读取的数据实际上是byte的字节流，需要强转为char类型，组装为原文字符串；而Serial.print()方法打印的数据，稍有不慎会出现乱序和重复的问题。然而这些问题都还没有结论，我也暂时没有深究。</p>
 <p>由于在8266中输出的字符串文本接受时都是零散的字符，因此我输出文本时，将每一段文本都加上<code>#</code>开头，在Arduino接收时以一个<code>#</code>以及一个结尾的<code>\n</code>作为一句文本的标志，以此获得完整的字符串。<br>然而如果是要接受一段mqtt协议相关的消息，那么一段消息我需要得到的最主要信息就是<code>topic</code>和<code>message</code>至少两个部分。因此我决定让8266输出的信息拼装为一个json串，然后Arduino上以json的方式取用数据。</p>
 <p><a href="#舵机">最后实现代码</a></p>
@@ -1601,6 +1606,7 @@ NavHelper定义逻辑：</li>
 <h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>本次折腾了快一周，算是很有收获，搞清楚了之前一直云里雾里的8266编程和他的AT指令以及串口通信的使用。</p>
 <p><strong>ESP8266和Arduino就像是两个的单片机，如果需要做AT指令不好完成的操作，当然需要另外编写代码烧录到8266中。而如果只是连接Wifi还是可以通过AT指令完成的，甚至进行MQTT通信，也可以使用对应的AT固件完成。</strong></p>
 <p>实际上在各种查阅时候，确实看到某大佬自己编写的支持8266进行mqtt通信的指令固件，参见<a href="http://wenzheng.club/2019/02/14/index/">他的站点</a>。对于这种大佬也是只有崇拜啦</p>
+<h1 id="更新"><a href="#更新" class="headerlink" title="更新"></a>更新</h1><h2 id="2021-05-08-舵机抖动"><a href="#2021-05-08-舵机抖动" class="headerlink" title="2021-05-08    舵机抖动"></a>2021-05-08    舵机抖动</h2><p>使用<code>Servo.h</code>库操作舵机，出现问题：舵机在接到指令转动之前，会有极小角度的颤抖，然后再进行偏转；甚至在未接收到指令时，偶现出现自发的小幅转动。<br>经过一番查阅，发现这篇博客，解决了<a href="https://blog.csdn.net/acktomas/article/details/101771616">舵机抖动问题</a>。<br>由文章分析可知，官方提供的<code>Servo.h</code>代码中使用了定时器中断，由于串口通信也需要使用定时器，所以如果同时使用了Servo和串口通信功能，那么会出现舵机抖动的问题。<br>博主给出的解决方式，自己实现舵机的驱动程序，实际上也十分简单，也是往舵机的数字接口发送一定频率的高低电平实现，代码如下：<br><figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">servopulse</span><span class="params">(<span class="keyword">int</span> angle)</span><span class="comment">//定义一个脉冲函数</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="comment">//发送50个脉冲</span></span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">50</span>; i++) &#123;</span><br><span class="line">    <span class="keyword">int</span> pulsewidth = (angle * <span class="number">11</span>) + <span class="number">500</span>; <span class="comment">//将角度转化为500-2480的脉宽值</span></span><br><span class="line">    digitalWrite(servoPin, HIGH);   <span class="comment">//将舵机接口电平至高</span></span><br><span class="line">    delayMicroseconds(pulsewidth);  <span class="comment">//延时脉宽值的微秒数</span></span><br><span class="line">    digitalWrite(servoPin, LOW);    <span class="comment">//将舵机接口电平至低</span></span><br><span class="line">    delayMicroseconds(<span class="number">20000</span> - pulsewidth);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">//  delay(20);</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 ]]></content>
       <categories>
         <category>Code</category>
@@ -2471,6 +2477,173 @@ NavHelper定义逻辑：</li>
       <tags>
         <tag>Network</tag>
         <tag>秘籍帖</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Kotlin之协程-扔物线笔记</title>
+    <url>/2021/04/06/Kotlin%E5%8D%8F%E7%A8%8B-%E6%89%94%E7%89%A9%E7%BA%BF%E7%AC%94%E8%AE%B0/</url>
+    <content><![CDATA[<blockquote>
+<p>通过<a href="https://kaixue.io/kotlin-coroutines-1/">扔物线对于Kotlin协程的讲解介绍</a>，对协程有了更加清晰的认识</p>
+</blockquote>
+<h1 id="简单定义"><a href="#简单定义" class="headerlink" title="简单定义"></a>简单定义</h1><p>一个封装了线程的上层线程API，用于线程切换，后台执行耗时任务</p>
+<a id="more"></a>
+<h1 id="简单使用"><a href="#简单使用" class="headerlink" title="简单使用"></a>简单使用</h1><p><code>协程Scope.launch &#123;&#125;</code><br><figure class="highlight kotlin"><table><tr><td class="code"><pre><span class="line">launch &#123;</span><br><span class="line">	<span class="keyword">val</span> imgae = getImageFromIO(imageId)</span><br><span class="line">	imageView.setImageBitmap(image)</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// launch方法需要使用某个Scope（作用域）调用，或者在runBloking &#123;&#125;中调用</span></span><br><span class="line"><span class="comment">// launch方法可以携带，指定目标线程；不携带参数时默认在本线程执行</span></span><br></pre></td></tr></table></figure></p>
+<h1 id="概念及优势"><a href="#概念及优势" class="headerlink" title="概念及优势"></a>概念及优势</h1><p>一个类似Java的Executor，Android的AsycTask的线程框架。<br><strong>区别在于，利用Kotlin的语言优势，可以更方便实现线程切换，以及<code>写出看似阻塞（同步）的非阻塞（异步）代码</code></strong>，即Kotlin的<code>非阻塞式挂起</code>。<br><figure class="highlight kotlin"><table><tr><td class="code"><pre><span class="line">launch(Dispatchers.Main) &#123;</span><br><span class="line">    <span class="keyword">val</span> imgae = getImageFromIO(imageId)</span><br><span class="line">    imageView.setImageBitmap(image)</span><br><span class="line">&#125;</span><br><span class="line">````</span><br><span class="line">协程可以实现在一个代码块中编写不同线程的代码，即getImageFromIO()方法，可以切到后台进行耗时操作，然后切回UI线程进行界面操作。而如果是在Java中，这部分代码一般会使用回调实现，然后在耗时任务完成的回调中进行界面操作。相比之下，协程的代码逻辑就看似顺序，同步了起来。</span><br><span class="line">&gt; 通过消除回调，抹平了多线程开发的难度，甚至打破回调对开发能力的限制</span><br><span class="line">&gt; 如当有这样的需求：通过网络获取两个没有相关性的接口信息内容，本地进行合并后显示。</span><br><span class="line">&gt; 理论上没有相关性的接口，应该使用并行请求，然后本地作融合，然而如果是回调式实现，就会是先发第一个请求，回调中进行第二个请求，然后再在回调中合并显示，时间上看就是双倍的请求时间，即降低了一倍的性能。</span><br><span class="line">&gt; 但在kotlin可以这样实现。</span><br><span class="line">``` kotlin</span><br><span class="line">launch(Dispatchers.Main) &#123;</span><br><span class="line">	<span class="keyword">val</span> info1 = async &#123; api.getInfo1() &#125;</span><br><span class="line">	<span class="keyword">val</span> info2 = async &#123; api.getInfo2() &#125;</span><br><span class="line">	<span class="keyword">val</span> info = merge(info1.await(), info2.await())</span><br><span class="line">	show(info)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><br><code>使用async也可以创建一个协程，并且与launch相同，可以返回一个Coroutine对象。区别在于，async返回的Coroutine对象还实现了Deferred接口，使得可以通过调用Deferred.await()方法可以获得async任务结束后返回的结果</code><br>因此，使用协程最重要的目的是，实现在一个代码块中进行多次的线程切换，为了<strong>改变并发任务的操作难度</strong>，降低复杂并发任务的实现难度甚至实现Java中难以实现的任务</p>
+<h1 id="使用方式"><a href="#使用方式" class="headerlink" title="使用方式"></a>使用方式</h1><p>使用<code>launch</code>包含一个代码块，实现创建一个协程并且指定一个线程执行。所谓协程就是代码块内容，所以可以理解为一个任务。</p>
+<p>withContext也可以实现线程切换执行任务，任务执行完成后切回原线程的功能。<code>自动切回原线程</code>的能力，大大减少了代码的嵌套，同时便于功能的封装。</p>
+<p>withContext()作为一个suspend函数，需要在协程中使用或在另一个suspend函数中使用。给函数加上suspend修饰，函数即为suspend函数，标识该方法执行一个耗时任务，建议（要求）在协程中执行。</p>
+<p>suspend即为暂停，挂起，即代码执行suspend会进行挂起操作，并且是非阻塞式挂起。该操作其实是进行了一个线程切换的工作，因此非阻塞式是相对于原线程来说，没有受到阻塞。</p>
+<p>我理解的withContext和launch的区别在于，launch可以创建一个协程，并且指定线程执行；withContext方法是一个suspend方法，只能在协程中调用，用于线程的切换并且执行完毕后会切回原线程。</p>
+<h1 id="协程的挂起"><a href="#协程的挂起" class="headerlink" title="协程的挂起"></a>协程的挂起</h1><p>launch创建的协程，执行到suspend方法时，会进行挂起操作。<br>所谓挂起，是将当前协程从线程上挂起，脱离原线程执行，即进行了线程切换操作。协程挂起后，不再在原线程执行，原线程的代码块（launch代码块）返回（return，类似提前结束）。挂起的协程，在执行的线程继续执行， 结束了suspend函数的内容以后，协程切回原线程（<strong>resume</strong>），执行剩余代码。<br>与handler.post机制类似，launch相当于往handler post了一个任务A执行，执行到suspend函数时，任务A提前结束返回（挂起），handler执行其他任务，suspend函数的内容在指定函数执行，工作内容结束以后，任务A剩余的工作再次被post到handler中执行（resume）。<br>所以所谓<code>挂起</code>，即可以理解为，<strong>一个暂时切走，然后会再切回来的线程切换</strong>。</p>
+<p>因此，因为协程有了resume恢复功能，会自动把挂起的线程切回来，所以suspend函数必须在协程中使用，保证协程被切走后，能被切回来。</p>
+<h1 id="如何挂起"><a href="#如何挂起" class="headerlink" title="如何挂起"></a>如何挂起</h1><p>定义一个suspend函数并且在其中使用withContext()函数（协程自带的，具备协程挂起功能的函数），线程切换发生在withContext中。<br>因此单纯的定义suspend并不能实现协程挂起，suspend只是一个函数定义者对该函数工作的标识，表示该函数是一个耗时函数，必须在协程中调用。<br>仅是对一个函数标识suspend却没有在其中使用挂起函数，只能实现限制该函数在协程中使用但并没有线程切换的能力。<br><strong>本质上是一个要求，实际上是一个提醒</strong>，尝试实现使所有的耗时操作都在后台执行的机制，降低主线程的卡顿。<br>综上，当一个函数中会进行耗时或者等待操作，则需要对其标识suspend，并且在其中进行挂起操作</p>
+<h1 id="关于launch"><a href="#关于launch" class="headerlink" title="关于launch"></a>关于launch</h1><p>launch用于创建一个协程并返回一个Job对象，Job对象即可视为一个协程。其余创建协程的方法有launch，async，runBlocking等。</p>
+<h1 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h1><figure class="highlight kotlin"><table><tr><td class="code"><pre><span class="line"><span class="comment">// Android</span></span><br><span class="line">Log.e(tag, <span class="string">&quot;0:<span class="subst">$&#123;Thread.currentThread().name&#125;</span>    <span class="subst">$&#123;Thread.currentThread().id&#125;</span>&quot;</span>)</span><br><span class="line">lifecycleScope.launch &#123;</span><br><span class="line">	Log.e(tag, <span class="string">&quot;1:<span class="subst">$&#123;Thread.currentThread().name&#125;</span>    <span class="subst">$&#123;Thread.currentThread().id&#125;</span>&quot;</span>)</span><br><span class="line">    withContext(Dispatchers.IO) &#123;</span><br><span class="line">    	Log.e(tag, <span class="string">&quot;2:<span class="subst">$&#123;Thread.currentThread().name&#125;</span>    <span class="subst">$&#123;Thread.currentThread().id&#125;</span>&quot;</span>)</span><br><span class="line">    &#125;</span><br><span class="line">    delay(<span class="number">3000</span>)</span><br><span class="line">    Log.e(tag, <span class="string">&quot;3:<span class="subst">$&#123;Thread.currentThread().name&#125;</span>    <span class="subst">$&#123;Thread.currentThread().id&#125;</span>&quot;</span>)</span><br><span class="line">&#125;</span><br><span class="line">Log.e(tag, <span class="string">&quot;5:<span class="subst">$&#123;Thread.currentThread().name&#125;</span>    <span class="subst">$&#123;Thread.currentThread().id&#125;</span>&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">// MacOS Windows</span></span><br><span class="line">runBlocking &#123;</span><br><span class="line">    println(<span class="string">&quot;0:<span class="subst">$&#123;Thread.currentThread().name&#125;</span>    <span class="subst">$&#123;Thread.currentThread().id&#125;</span>&quot;</span>)</span><br><span class="line">    <span class="keyword">val</span> job = GlobalScope.launch &#123;</span><br><span class="line">        println(<span class="string">&quot;1:<span class="subst">$&#123;Thread.currentThread().name&#125;</span>    <span class="subst">$&#123;Thread.currentThread().id&#125;</span>&quot;</span>)</span><br><span class="line"></span><br><span class="line">        withContext(Dispatchers.IO) &#123;</span><br><span class="line">            println(<span class="string">&quot;2:<span class="subst">$&#123;Thread.currentThread().name&#125;</span>    <span class="subst">$&#123;Thread.currentThread().id&#125;</span>&quot;</span>)</span><br><span class="line">        &#125;</span><br><span class="line">        delay(<span class="number">3000</span>)</span><br><span class="line">        println(<span class="string">&quot;3:<span class="subst">$&#123;Thread.currentThread().name&#125;</span>    <span class="subst">$&#123;Thread.currentThread().id&#125;</span>&quot;</span>)</span><br><span class="line">    &#125;</span><br><span class="line">    println(<span class="string">&quot;5:<span class="subst">$&#123;Thread.currentThread().name&#125;</span>    <span class="subst">$&#123;Thread.currentThread().id&#125;</span>&quot;</span>)</span><br><span class="line">    job.join()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>使用以上代码进行测试，分别基于MacOS的kotlin环境，Windows10的Kotlin环境，以及Android系统环境进行测试，得到了不同的结果<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; ---- Android ----</span><br><span class="line">&#x2F;&#x2F; 0:main    1</span><br><span class="line">&#x2F;&#x2F; 1:main    1</span><br><span class="line">&#x2F;&#x2F; 5:main    1</span><br><span class="line">&#x2F;&#x2F; 2:DefaultDispatcher-worker-1    14868</span><br><span class="line">&#x2F;&#x2F; 3:main    1</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; ---- Mac0S ----</span><br><span class="line">&#x2F;&#x2F; 0:main @coroutine#1    1</span><br><span class="line">&#x2F;&#x2F; 5:main @coroutine#1    1</span><br><span class="line">&#x2F;&#x2F; 1:DefaultDispatcher-worker-1 @coroutine#2    11</span><br><span class="line">&#x2F;&#x2F; 2:DefaultDispatcher-worker-2 @coroutine#2    12</span><br><span class="line">&#x2F;&#x2F; 3:DefaultDispatcher-worker-2 @coroutine#2    12</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 0:main @coroutine#1    1</span><br><span class="line">&#x2F;&#x2F; 5:main @coroutine#1    1</span><br><span class="line">&#x2F;&#x2F; 1:DefaultDispatcher-worker-1 @coroutine#2    11</span><br><span class="line">&#x2F;&#x2F; 2:DefaultDispatcher-worker-2 @coroutine#2    12</span><br><span class="line">&#x2F;&#x2F; 3:DefaultDispatcher-worker-2 @coroutine#2    11</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; ---- Windows ----</span><br><span class="line">&#x2F;&#x2F; 0:main     1</span><br><span class="line">&#x2F;&#x2F; 5:main     1</span><br><span class="line">&#x2F;&#x2F; 1:DefaultDispatcher-worker-1 @coroutine#2    14</span><br><span class="line">&#x2F;&#x2F; 2:DefaultDispatcher-worker-2 @coroutine#2    14</span><br><span class="line">&#x2F;&#x2F; 3:DefaultDispatcher-worker-2 @coroutine#3    15</span><br></pre></td></tr></table></figure><br>可以看到，只有在Android平台下的表现才是符合上述的理论的，即<code>launch</code>没有进行线程切换，只有在<code>withContext()</code>中才进行线程切换。然而其他平台都是进入协程代码块（launch）即进入了新的线程。<br>起初我还以为，是<del>因为不同操作系统的线程调度机制差异，因此协程作为线程调度的上层API也产生了差异</del>。实际上不是这样。<br>网上有文章说<code>GlobalScope</code>启动的协程都是独立的，生命周期只受到Application影响。因此使用<code>GlobalScope.launch</code>创建的协程也会在一个独立的线程执行。<br>使用coroutineScope { }可以为其中的协程添加作用域，而该协程任务不会在后台线程中执行。</p>
+]]></content>
+      <categories>
+        <category>Code</category>
+      </categories>
+      <tags>
+        <tag>Android</tag>
+        <tag>Kotlin</tag>
+        <tag>秘籍贴</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Android-Jetpack初识</title>
+    <url>/2021/03/24/Android-Jetpack%E5%88%9D%E8%AF%86/</url>
+    <content><![CDATA[<h1 id="Navgation"><a href="#Navgation" class="headerlink" title="Navgation"></a>Navgation</h1><h2 id="Navigation基本使用"><a href="#Navigation基本使用" class="headerlink" title="Navigation基本使用"></a>Navigation基本使用</h2><ul>
+<li>创建navgation文件夹，编写xml</li>
+<li>引用navgation的fragment需指定xml文件，已经通过<code>name</code>指定一个NavHostFragment或其派生类，是一个空的Fragment容器</li>
+<li>指定fragment以及相应action（通过Desgin拖动视图级箭头设置）</li>
+</ul>
+<a id="more"></a>
+<h2 id="NavigationUI"><a href="#NavigationUI" class="headerlink" title="NavigationUI"></a>NavigationUI</h2><ul>
+<li>设置点击返回键Back时的回退路径destination<ul>
+<li><code>popUpToInclusive=true</code>时，返回栈帧删除fragment，连同制定fragment</li>
+<li><code>popUpToInclusive=false</code>时，返回栈帧删除fragment，留下指定fragment </li>
+</ul>
+</li>
+<li>若指定的destination是最初的fragment，且popUpToInclusive=true，则所有栈帧移除，返回键会推出该app</li>
+<li>NavigationUI 设置菜单栏，返回键，抽屉等<ul>
+<li>菜单栏是通过id指定navigation.xml中的fragment，注意对应</li>
+</ul>
+</li>
+</ul>
+<h2 id="NavDirection"><a href="#NavDirection" class="headerlink" title="NavDirection"></a>NavDirection</h2><ul>
+<li>使用NavDirection实现fragment与activity之间的数据传输，代替Bundle。目的减少键值对使用出现的问题如key错误，类型不匹配等</li>
+<li>需要安装gradle插件，因为编译期间需要创建Direction对象以携带数据<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line"><span class="comment">// project gradle下添加</span></span><br><span class="line">classpath <span class="string">&quot;androidx.navigation:navigation-safe-args-gradle-plugin:$navigationVersion&quot;</span></span><br><span class="line"><span class="comment">// module gradle下添加</span></span><br><span class="line">apply <span class="attr">plugin:</span> <span class="string">&#x27;androidx.navigation.safeargs&#x27;</span></span><br></pre></td></tr></table></figure></li>
+<li>调用Direction的静态方法实现跳转的action，携带的数据以Direction内部属性的形式传递</li>
+<li>接收数据一端，通过Args对象，fromBundle(getArguments())获取Bundle并转换为对应的Args对象，其中保存着传输的数据</li>
+</ul>
+<h1 id="LifeCycle"><a href="#LifeCycle" class="headerlink" title="LifeCycle"></a>LifeCycle</h1><p>用于感知Activity与Fragment生命周期的组件。</p>
+<h1 id="ViewModel"><a href="#ViewModel" class="headerlink" title="ViewModel"></a>ViewModel</h1><p><a href="https://developer.android.com/codelabs/kotlin-android-training-view-model?index=..%2F..android-kotlin-fundamentals#4">原文参考</a></p>
+<blockquote>
+<p>UI controller is a UI-based class such as Activity or Fragment. A UI controller should only contain logic that handles UI and operating-system interactions such as displaying views and capturing user input. Don’t put decision-making logic, such as logic that determines the text to display, into the UI controller.<br>UI控制不应该包含决策逻辑，只负责界面的显示绘制，以及感知界面变化，如有按钮被点击时将这一信息传递到ViewModel</p>
+</blockquote>
+<ul>
+<li>ViewModel会在Activity被finish或Fragment被destroyed后调用onCleared()销毁<blockquote>
+<p>During configuration changes such as screen rotations, UI controllers such as fragments are re-created. However, ViewModel instances survive. If you create the ViewModel instance using the ViewModel class, a new object is created every time the fragment is re-created. Instead, create the ViewModel instance using a ViewModelProvider.</p>
+</blockquote>
+</li>
+<li>直接使用ViewModel创建实例，则UI控制器因为配置修改（经典旋转屏幕）而重新创建时，ViewModel会创建新的实例。所以使用ViewModelProvider创建ViewModel实例，ViewModel不会被重复创建，并且可以存储数据</li>
+<li>ViewModelProvider创建ViewModel且关联一个给定作用域，如activity或fragment。并且保留数据直到作用域被销毁</li>
+<li>在绑定变量（databinding）的定义之后使用ViewModelProvider获取ViewModel，并且传递关联的上下文及具体的ViewModel.class<blockquote>
+<p>Because the app’s activities, fragments and views do not survive configuration changes, the ViewModel should not contain references to the app’s activities, fragments, or views.</p>
+</blockquote>
+</li>
+<li>ViewModel不应该保存fragment，view等的引用。因为ViewModel在配置变化后存活，但frament和view不会存活（re-Create）</li>
+<li>绑定变量以及Binding对象不应该存储到ViewModel中，因为他们包含了对view的引用。所有决定数据显示逻辑的代码应该在ViewModel中编写</li>
+<li>AndroidViewModel。类似ViewModel的基类，区别在于携带一个Application参数</li>
+</ul>
+<p>最简单直白的使用，其实就是将控制逻辑和数据使用ViewModel包装起来，并且在View中使用ViewModelProvider加载，以实现View重建时，ViewModel不会重新加载而将保存的数据重复使用</p>
+<h2 id="ViewModelFactory"><a href="#ViewModelFactory" class="headerlink" title="ViewModelFactory"></a>ViewModelFactory</h2><p>使用Factory的意义在于，单纯的使用ViewModelProvider创建ViewModel，无法向ViewModel传递参数，只能实例化没有参数的ViewModel<br>使用Factory，可以实现实例化ViewModel时传递多个参数</p>
+<h1 id="LiveData"><a href="#LiveData" class="headerlink" title="LiveData"></a>LiveData</h1><ul>
+<li>使用MutableLiveData代替数据类型，通过泛型设置数据的真正类型，数据真正的值通过liveData.value访问</li>
+<li>LiveData的实现是基于观察者模式，因此需要在view中设置观察事件。在viewModel初始化以后，调用MutableLiveData.observe方法，设置回调事件。并且首先需要传入一个viewLifecycleOwner<br><strong>Why use viewLifecycleOwner?</strong></li>
+<li>在回调方法中将回调参数进行使用，则当viewModel中的liveData发生变化时，回调函数执行<h2 id="LiveData封装"><a href="#LiveData封装" class="headerlink" title="LiveData封装"></a>LiveData封装</h2>由于在View中可以直接访问到ViewModel的内容，直接修改LiveData，所以需要通过封装以及kotlin的幕后属性（Backing Property）实现LiveData的读写限制<br><strong>尝试不使用ViewModel，只使用LiveData，理论上互不影响</strong></li>
+</ul>
+<h1 id="kotlin-Backing-property"><a href="#kotlin-Backing-property" class="headerlink" title="kotlin-Backing property"></a>kotlin-Backing property</h1><p>Kotlin的幕后属性，用于实现<strong>属性对外表现可读，对内表现可写可读</strong>。<br><figure class="highlight kotlin"><table><tr><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">var</span> _name = <span class="string">&quot;&quot;</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">val</span> name : String</span><br><span class="line">	<span class="keyword">get</span>() = _name</span><br></pre></td></tr></table></figure><br>类内部使用<code>_name</code>进行读写，对外由于没有设置set()写访问器，只能访问<code>name</code></p>
+<p>顺便说说kotlin的幕后字段<code>field</code>。在kotlin中，使用属性都是通过访问器，所以在get()中使用该属性，实际上也是调用get()，即出现递归，最后堆栈溢出，setter同理。<br>所以在getter，setter中，使用<code>field</code>表示该属性，且field也只能用于getter，setter。</p>
+<h1 id="DataBinding"><a href="#DataBinding" class="headerlink" title="DataBinding"></a>DataBinding</h1><figure class="highlight kotlin"><table><tr><td class="code"><pre><span class="line"><span class="comment">// Fragmen中加载layout</span></span><br><span class="line"><span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onCreateView</span><span class="params">(inflater: <span class="type">LayoutInflater</span>, container: <span class="type">ViewGroup</span>?, savedInstanceState: <span class="type">Bundle</span>?)</span></span>: View? &#123;</span><br><span class="line">		<span class="keyword">val</span> binding = DataBindingUtil.inflate&lt;FragmentTitleBinding&gt;(inflater, R.layout.fragment_title, container, <span class="literal">false</span>)</span><br><span class="line">		<span class="keyword">return</span> binding.root</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="DataBinding-LiveData"><a href="#DataBinding-LiveData" class="headerlink" title="DataBinding+LiveData"></a>DataBinding+LiveData</h2><p>没有DataBinding的情况下，ViewModel与View直接没有直接的联系，其间通过UIController连接，如一个按钮被点击，UIController调用一个点击事件，通知ViewModel做出响应，然后更新<br>使用DataBinding，View与ViewModel直接通信，指的是在xml中直接与ViewModel通信，而不通过UIController，即直接在xml中编写逻辑。</p>
+<ul>
+<li>首先需要在xml中引入ViewModel实例，在<layout>以下建立<data>标签，其中通过<variable>引用viewModel对象，然后在UIController中，将viewModel传入<br>绑定的内容，主要分为两种，行为和数据</li>
+<li>绑定行为，主要对象为按钮等。在<code>onClick</code>一项中通过<strong>@{() -&gt; viewModel.onSkip() }</strong>的方式，直接调用ViewModel中的方法</li>
+<li>绑定数据，主要对象为TextView等。在<code>text</code>一项中通过<strong>@{viewModel.data}</strong>的方式设置文本<blockquote>
+<p>If the value of word is null, the LiveData object displays an empty string.</p>
+<ul>
+<li>注意，需要把UIController的LifecycleOwner实例传入，否则LivaData的observe不生效。binding对象中自带lifecycleOwner属性，需要实例化</li>
+<li>如果设置liveData时需要对文本进行修饰，可以使用<string name="score_format">Current Score：%d</string>的形式</li>
+</ul>
+</blockquote>
+</li>
+</ul>
+<h2 id="DataBinding-Transformations"><a href="#DataBinding-Transformations" class="headerlink" title="DataBinding+Transformations"></a>DataBinding+Transformations</h2><p>实际上也是一种数据转换。即在ViewModel中另设一个变量，其值通过Transformtions.map(liveData)的方式定义，返回显示时需要的文本格式和内容</p>
+<h2 id="BindingAdapter"><a href="#BindingAdapter" class="headerlink" title="BindingAdapter"></a>BindingAdapter</h2><p>在Kotlin中，允许通过扩展函数的方式增加类的能力。<br>例如<code>fun TextView.setFormatText(con: String)</code>，为TextView扩展了一个方法，在其中可以直接调用TextView的方法，有点类似于C++的友元函数<br>如果为该方法<strong>添加注解<code>@BindingAdapter</code>，并且传入属性名称，可以实现在xml中通过该属性名调用该方法</strong>。该方法即成为该属性的适配器。</p>
+<h1 id="Room"><a href="#Room" class="headerlink" title="Room"></a>Room</h1><p>LiteSQL上层封装，实现更加便捷的数据库操作</p>
+<ul>
+<li>编写实体类，通过注解标志信息<ul>
+<li>@Entity，默认使用类名创建数据表，可以通过参数name指定</li>
+<li>@PrimaryKey，标识主键，通过参数autoGenrate设置是否自增</li>
+<li>@ColumnInfo，标识表项</li>
+</ul>
+</li>
+<li>与其他数据库框架相似，Room也需要编写Dao模块接口，可将视为自定义访问数据库的接口。<ul>
+<li>需要使用@Dao标识，并且方法需要使用对应操作的注解标识，如@Insert，@Update</li>
+<li>其他操作没有便捷的注解方式，如select或delete，需要在@Query注解內，传入对应的SQL语句</li>
+<li>注意，当sql语句中需要引用接口方法传入的参数时，使用<code>where id = :key</code>的方式引用</li>
+<li>使用@Delete可以删除多个特定数据项</li>
+<li>通过使用LiveDate作为返回值类型，Room可以保持LiveData的持续更新，即只需要一次显式获取数据</li>
+</ul>
+</li>
+<li>使用单例模式实现数据库实例。通过注解<code>@Database</code>标识，传入参数为实体列表（数据表），版本号。使用build模式创建数据库实例，传入参数为app上下文，该数据库类，数据库名</li>
+</ul>
+<blockquote>
+<p>Execution failed for task ‘:app:kaptDebugKotlin’.</p>
+<blockquote>
+<p>A failure occurred while executing org.jetbrains.kotlin.gradle.internal.KaptExecution<br>java.lang.reflect.InvocationTargetException (no error message)<br>如果出现以上报错，可以检查一下以下部分</p>
+<ol>
+<li>room模块需要添加的依赖包是否完整<br> implementation “androidx.room:room-ktx:$room_version”<br> implementation “androidx.room:room-runtime:$room_version”<br> kapt “androidx.room:room-compiler:$room_version”</li>
+<li>Dao，Entity，Database中room使用是否规范<br>例如我的问题则是：Dao中@Update修饰的方法设置了返回值…</li>
+</ol>
+</blockquote>
+</blockquote>
+<blockquote>
+<p>建议：不要在启动应用时即联网获取数据显示，而是直接从数据库读取数据进行显示，从而减少程序加载的时间。<br>而当获取到网络的数据时，应将数据存到数据库中，而不是直接显示数据。更新完数据库后再更新屏幕中的内容。</p>
+</blockquote>
+<h1 id="关于协程"><a href="#关于协程" class="headerlink" title="关于协程"></a>关于协程</h1><p>关于从主线程获取任务完成的方式，有两种，<strong>回调</strong>和<strong>协程</strong><br>回调可以实现在后台长时间执行任务而<strong>不阻塞主线程</strong>，任务结束后执行作为参数传入的回调任务。<br>然而回调函数也有明显的确定，即回调方法块会以异步的形式在某一个时间执行，因此代码不是顺序执行，大量的回调函数使得代码可读性下降。另外，回调函数不允许使用某些语言特性，如<strong>异常</strong><br>在Kotlin中，可以直接使用协程实现线程协同。协程可以实现基于回调的代码转化为顺序执行，提升了可读性，甚至可以使用异常等语言特性<br>实际上，回调和协程都是完成了同样的事情，即等待一个耗时任务的结果，并继续执行。<br>使用<code>suspend</code>标记函数，代表其可以被协程调用。当该函数被调用，<strong>协程将暂停执行，而不是像普通函数一样阻塞直到函数返回</strong>，也就是说，当协程暂停等待耗时任务的结果时，他不会阻塞其原来运行的线程。<br>suspend可以理解为挂起或暂停。与阻塞的区别在于，线程挂起时，在等到其结果返回前可以进行其他的工作；而阻塞线程时，不能进行其他工作。</p>
+<p>返回LiveData的方法Room默认会在后台线程执行，因此不需要使用suspend标记。</p>
+<h1 id="关于RecyclerView"><a href="#关于RecyclerView" class="headerlink" title="关于RecyclerView"></a>关于RecyclerView</h1><p>使用<code>notifyDataSetChanged()</code>可以进行全列表的内容更新。但这实际上有些效率低下，因为每次更新的可能只是列表中的一个或几个Item，而不需要否定整个列表并对他进行重新绑定和绘制。<br>使用<code>notifyItemChange()</code>可以解决以上问题，他可以更新列表中的某些个Item而不需要重绘整个列表。然而所以增删改查操作都通过它实现，可能涉及较多代码并且不好实现。<br>RecyclerView提供了更好的方法。</p>
+<h2 id="DiffUtil"><a href="#DiffUtil" class="headerlink" title="DiffUtil"></a>DiffUtil</h2><p>通过实现<code>DiffUtil.ItemCallback</code>接口，实现其中的比较方法逻辑，并将该子类实例化对象传入Adapter，实现自动进行代码比较与更新。<br>该接口中的两个比较方法，分别定义了Item对象的比较方式与Item内容的比较方式，并在内部通过比较算法，实现快速对比得到差异。</p>
+<h2 id="DataBinding-1"><a href="#DataBinding-1" class="headerlink" title="DataBinding"></a>DataBinding</h2><p>使用<code>androidx.recyclerview.widget.ListAdapter</code>代替<code>RecyclerView.Adapter</code>，配合databinding使用。<br>通过向ViewHolder传入一个DataBinding对象，代替原来的View，实现数据的绑定。并且在数据发生变化时（observer），通过<code>adapter.submitList(data)</code>，进行数据更新。<code>submitList()</code>方法会对比新旧两个数据列表的数据，比较的原则则是我们在DiffCallback中实现的两个方法。比较完后根据差异自动进行数据增删修改。</p>
+<h1 id="WorkManager"><a href="#WorkManager" class="headerlink" title="WorkManager"></a>WorkManager</h1><ul>
+<li>Worker 接口中实现doWork()方法，指定后台工作内容</li>
+<li>WorkRequest 用于请求后台工作，可以配置工作优先级，调用时机，如电量瓶颈，连上wifi等</li>
+<li>WorkManager 安排并运行后台工作，分散系统负荷</li>
+</ul>
+<p><code>doWork()</code>作为一个suspend方法，会在一个后台线程调用。<code>Android系统最多会提供10min时间去完成一个任务，并返回一个Result对象。超过时间将会强制停止该工作。</code></p>
+<p><a href="https://developer.android.com/topic/libraries/architecture/workmanager">Developer</a></p>
+<ul>
+<li>后台任务分为定时任务和一次性任务。定时任务的周期必须大于15min。</li>
+<li>使用WorkRequestBuilder创建WorkRequest。PeriodicWorkRequestBuilder用于创建定时任务，需要传入周期和单位</li>
+<li>使用setConstraints()设置约束</li>
+<li>执行任务，使用WorkManager调用enqueueUniquePeriodicWork()，将任务传入任务队列</li>
+<li>定时任务会多次执行，除非其被取消。第一次设定即执行，或者满足约束即执行</li>
+<li>定时任务的时间间隔并不精准，取决于系统的电池优化。</li>
+<li>取消任务可以通过work.id，word.name，work.tag<figure class="highlight kotlin"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 示例</span></span><br><span class="line"><span class="keyword">private</span> <span class="function"><span class="keyword">fun</span> <span class="title">setupRecurringWork</span><span class="params">()</span></span> &#123;</span><br><span class="line"></span><br><span class="line">       <span class="keyword">val</span> constraints = Constraints.Builder()</span><br><span class="line">               .setRequiredNetworkType(NetworkType.UNMETERED)</span><br><span class="line">               .setRequiresBatteryNotLow(<span class="literal">true</span>)</span><br><span class="line">               .setRequiresCharging(<span class="literal">true</span>)</span><br><span class="line">               .apply &#123;</span><br><span class="line">                   <span class="keyword">if</span> (Build.VERSION.SDK_INT &gt;= Build.VERSION_CODES.M) &#123;</span><br><span class="line">                       setRequiresDeviceIdle(<span class="literal">true</span>)</span><br><span class="line">                   &#125;</span><br><span class="line">               &#125;</span><br><span class="line">               .build()</span><br><span class="line">       <span class="keyword">val</span> repeatingRequest = PeriodicWorkRequestBuilder&lt;RefreshDataWorker&gt;(<span class="number">1</span>, TimeUnit.DAYS)</span><br><span class="line">               .setConstraints(constraints)</span><br><span class="line">               .build()</span><br><span class="line">       </span><br><span class="line">       Timber.d(<span class="string">&quot;Periodic Work request for sync is scheduled&quot;</span>)</span><br><span class="line">       WorkManager.getInstance().enqueueUniquePeriodicWork(</span><br><span class="line">               RefreshDataWorker.WORK_NAME,</span><br><span class="line">               ExistingPeriodicWorkPolicy.KEEP,</span><br><span class="line">               repeatingRequest)</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1>在ViewModel中，使用LiveData实现数据与界面协同，即数据变化时界面的变化<br>使用databinding，直接关联界面（xml）与数据</li>
+</ul>
+<h1 id="组件在实际项目中的应用"><a href="#组件在实际项目中的应用" class="headerlink" title="组件在实际项目中的应用"></a>组件在实际项目中的应用</h1>]]></content>
+      <categories>
+        <category>Code</category>
+      </categories>
+      <tags>
+        <tag>Android</tag>
+        <tag>Kotlin</tag>
+        <tag>Jetpack</tag>
+        <tag>秘籍贴</tag>
       </tags>
   </entry>
 </search>
